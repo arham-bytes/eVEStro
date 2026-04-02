@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Ticket, Calendar, MapPin, Download, Loader2, QrCode, CheckCircle, XCircle } from 'lucide-react';
+import { Ticket, Calendar, MapPin, Download, Loader2, QrCode, CheckCircle, XCircle, Wallet } from 'lucide-react';
 import { formatDate, formatPrice, getCategoryBadgeClass } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 import api from '../api/axios';
 
 export default function StudentDashboard() {
@@ -38,7 +39,7 @@ export default function StudentDashboard() {
         // Create a printable ticket
         const w = window.open('', '_blank');
         w.document.write(`
-      <html><head><title>CampusPass Ticket - ${booking.ticketId}</title>
+      <html><head><title>Evestro Ticket - ${booking.ticketId}</title>
       <style>body{font-family:Inter,sans-serif;padding:40px;max-width:600px;margin:0 auto;background:#f9fafb}
       .ticket{border:2px solid #e5e7eb;border-radius:16px;padding:32px;background:white}
       .header{text-align:center;margin-bottom:24px;padding-bottom:16px;border-bottom:2px dashed #e5e7eb}
@@ -48,7 +49,7 @@ export default function StudentDashboard() {
       .info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
       .info-item{padding:8px 0}.label{font-size:12px;color:#6b7280;text-transform:uppercase}.value{font-weight:600;color:#111}
       .tid{text-align:center;font-size:14px;color:#6b7280;margin-top:16px;padding-top:16px;border-top:2px dashed #e5e7eb}</style></head>
-      <body><div class="ticket"><div class="header"><h1>🎫 CampusPass</h1><h2>${booking.event?.title || 'Event'}</h2></div>
+      <body><div class="ticket"><div class="header"><h1>🎫 Evestro</h1><h2>${booking.event?.title || 'Event'}</h2></div>
       <div class="qr"><img src="${booking.qrCode}" alt="QR Code" /></div>
       <div class="info">
       <div class="info-item"><div class="label">Date</div><div class="value">${booking.event?.date ? new Date(booking.event.date).toLocaleDateString() : '-'}</div></div>
@@ -70,7 +71,7 @@ export default function StudentDashboard() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
                 <div className="glass-card p-6 text-center">
                     <Ticket className="w-8 h-8 text-primary-400 mx-auto mb-2" />
                     <p className="text-2xl font-bold">{bookings.length}</p>
@@ -86,6 +87,11 @@ export default function StudentDashboard() {
                     <p className="text-2xl font-bold">{bookings.filter(b => b.status === 'checked-in').length}</p>
                     <p className="text-sm text-campus-muted">Attended</p>
                 </div>
+                <Link to="/wallet" className="glass-card p-6 text-center hover:border-primary-500/50 transition-all group">
+                    <Wallet className="w-8 h-8 text-yellow-400 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                    <p className="text-2xl font-bold">₹{(user?.walletBalance || 0).toLocaleString('en-IN')}</p>
+                    <p className="text-sm text-campus-muted">Wallet Balance</p>
+                </Link>
             </div>
 
             {/* Referral */}

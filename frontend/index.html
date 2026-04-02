@@ -3,79 +3,24 @@
 
 <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
+    <link rel="apple-touch-icon" href="/favicon.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
-        content="CampusPass — Discover, book, and manage college events across India. The #1 platform for campus fests, tech meetups, sports, and more." />
+        content="Evestro — Discover, book, and manage college events across India. The #1 platform for campus fests, tech meetups, sports, and more." />
     <meta name="keywords" content="college events, campus events, ticketing, Indian colleges, fests, tech events" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <title>CampusPass — College Event Ticketing</title>
+    <title>Evestro — College Event Ticketing</title>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
 <body class="bg-campus-darker text-white antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-</body>
-
-</html>
-
-<body>
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        const firebaseConfig = {
-            apiKey: "AIzaSyDAYqqk7IslSBRVe7Ik5t0qZniicVO_QoQ",
-            authDomain: "campuspass-89f98.firebaseapp.com",
-            projectId: "campuspass-89f98",
-            storageBucket: "campuspass-89f98.firebasestorage.app",
-            messagingSenderId: "267704093393",
-            appId: "1:267704093393:web:465af55641f5cd1c8d93f0",
-            measurementId: "G-0LXLLGEZH6"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-    </script>
-    <script>
-        function signup() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-
-            firebase.auth().createUserWithEmailAndPassword(email, password)
-                .then(() => {
-                    alert("User Registered ✅");
-                })
-                .catch((error) => {
-                    alert(error.message);
-                });
-        }
-    </script>
-    <script>
-        function login() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-
-            firebase.auth().signInWithEmailAndPassword(email, password)
-                .then(() => {
-                    alert("Login Successful ✅");
-                })
-                .catch((error) => {
-                    alert(error.message);
-                });
-        }
-    </script>
 </body>
 
 </html>

@@ -24,7 +24,7 @@ export default function Signup() {
         try {
             const { confirmPassword, ...userData } = form;
             const data = await register(userData);
-            toast.success(`Welcome to CampusPass, ${data.user.name}!`);
+            toast.success(`Welcome to Evestro, ${data.user.name}!`);
             const dest = data.user.role === 'organizer' ? '/organizer' : '/dashboard';
             navigate(dest);
         } catch (error) {
@@ -49,7 +49,7 @@ export default function Signup() {
                         </div>
                     </Link>
                     <h1 className="text-3xl font-bold font-display mt-4">Create your account</h1>
-                    <p className="text-campus-muted mt-2">Join thousands of students on CampusPass</p>
+                    <p className="text-campus-muted mt-2">Join thousands of students on Evestro</p>
                 </div>
 
                 <div className="glass-card p-8">

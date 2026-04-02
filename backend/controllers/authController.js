@@ -53,6 +53,7 @@ exports.register = async (req, res, next) => {
                 role: user.role,
                 college: user.college,
                 referralCode: user.referralCode,
+                walletBalance: user.walletBalance,
             },
         });
     } catch (error) {
@@ -97,6 +98,7 @@ exports.login = async (req, res, next) => {
                 role: user.role,
                 college: user.college,
                 referralCode: user.referralCode,
+                walletBalance: user.walletBalance,
             },
         });
     } catch (error) {
@@ -119,6 +121,7 @@ exports.getMe = async (req, res, next) => {
                 college: user.college,
                 phone: user.phone,
                 referralCode: user.referralCode,
+                walletBalance: user.walletBalance,
                 createdAt: user.createdAt,
             },
         });

@@ -23,7 +23,7 @@ const sendEmail = async (options) => {
         });
 
         const mailOptions = {
-            from: `"CampusPass" <${process.env.SMTP_USER}>`,
+            from: `"Evestro" <${process.env.SMTP_USER}>`,
             to: options.to,
             subject: options.subject,
             text: options.text,

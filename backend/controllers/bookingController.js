@@ -1,6 +1,8 @@
 const crypto = require('crypto');
 const Booking = require('../models/Booking');
 const Event = require('../models/Event');
+const User = require('../models/User');
+const WalletTransaction = require('../models/WalletTransaction');
 const generateQR = require('../utils/generateQR');
 const sendEmail = require('../utils/sendEmail');
 
@@ -8,7 +10,7 @@ const sendEmail = require('../utils/sendEmail');
 // @route   POST /api/bookings
 exports.createBooking = async (req, res, next) => {
     try {
-        const { eventId, couponCode } = req.body;
+        const { eventId, couponCode, paymentMethod } = req.body;
 
         const event = await Event.findById(eventId);
         if (!event) {
@@ -30,7 +32,7 @@ exports.createBooking = async (req, res, next) => {
             return res.status(400).json({ success: false, message: 'You have already booked this event' });
         }
 
-        // Calculate price with coupon
+        // Calculate price with coupon (use customer-facing price)
         let totalAmount = event.price;
         let couponUsed = '';
 
@@ -89,7 +91,80 @@ exports.createBooking = async (req, res, next) => {
             return res.status(201).json({ success: true, data: booking });
         }
 
-        // For paid events, return info for payment flow
+        // WALLET PAYMENT
+        if (paymentMethod === 'wallet') {
+            const user = await User.findById(req.user._id);
+
+            if (user.walletBalance < totalAmount) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Insufficient wallet balance. You need ₹${totalAmount} but have ₹${user.walletBalance}`,
+                });
+            }
+
+            // Debit wallet
+            user.walletBalance -= totalAmount;
+            await user.save();
+
+            // Create wallet transaction
+            await WalletTransaction.create({
+                user: req.user._id,
+                type: 'debit',
+                amount: totalAmount,
+                description: `Ticket: ${event.title}`,
+                reference: eventId,
+                balanceAfter: user.walletBalance,
+                status: 'completed',
+            });
+
+            // Create booking
+            const ticketId = `CP-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
+            const qrCode = await generateQR({
+                ticketId,
+                eventId: event._id,
+                eventTitle: event.title,
+                userName: req.user.name,
+            });
+
+            const booking = await Booking.create({
+                event: eventId,
+                user: req.user._id,
+                ticketId,
+                qrCode,
+                totalAmount,
+                couponUsed,
+                status: 'confirmed',
+            });
+
+            // Update tickets sold
+            event.ticketsSold += 1;
+            await event.save();
+
+            await booking.populate('event', 'title date venue');
+
+            // Send email
+            sendEmail({
+                to: req.user.email,
+                subject: `🎫 Booking Confirmed - ${event.title}`,
+                html: `
+          <h2>Payment via Wallet! Your ticket is confirmed.</h2>
+          <p><strong>Event:</strong> ${event.title}</p>
+          <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
+          <p><strong>Venue:</strong> ${event.venue}</p>
+          <p><strong>Amount Paid:</strong> ₹${totalAmount} (from wallet)</p>
+          <p><strong>Ticket ID:</strong> ${ticketId}</p>
+          <p>Show your QR code at the venue for check-in.</p>
+        `,
+            });
+
+            return res.status(201).json({
+                success: true,
+                data: booking,
+                walletBalance: user.walletBalance,
+            });
+        }
+
+        // For paid events (non-wallet), return info for Razorpay payment flow
         res.json({
             success: true,
             requiresPayment: true,
@@ -101,6 +176,7 @@ exports.createBooking = async (req, res, next) => {
         next(error);
     }
 };
+
 
 // @desc    Get user's bookings
 // @route   GET /api/bookings/my

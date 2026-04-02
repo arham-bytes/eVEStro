@@ -32,12 +32,7 @@ export default function Home() {
         { name: 'Seminar', icon: Shield, color: 'from-cyan-500 to-blue-500', desc: 'Talks & Panels' },
     ];
 
-    const stats = [
-        { label: 'Events Hosted', value: '2,500+' },
-        { label: 'Students Registered', value: '50,000+' },
-        { label: 'Colleges', value: '300+' },
-        { label: 'Tickets Sold', value: '1,00,000+' },
-    ];
+
 
     return (
         <div className="overflow-hidden">
@@ -77,15 +72,7 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Stats */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-20 animate-slide-up" style={{ animationDelay: '0.3s' }}>
-                        {stats.map((stat) => (
-                            <div key={stat.label} className="glass-card text-center p-6">
-                                <p className="text-2xl md:text-3xl font-bold gradient-text">{stat.value}</p>
-                                <p className="text-sm text-campus-muted mt-1">{stat.label}</p>
-                            </div>
-                        ))}
-                    </div>
+
                 </div>
             </section>
 
@@ -150,7 +137,7 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             { step: '01', icon: Calendar, title: 'Discover Events', desc: 'Browse hundreds of events across colleges in India. Filter by category, college, or date.' },
-                            { step: '02', icon: CreditCard, title: 'Book & Pay', desc: 'Secure your spot with instant online payment via Razorpay. Get your QR-coded ticket.' },
+                            { step: '02', icon: CreditCard, title: 'Book & Pay', desc: 'Secure your spot instantly using your Evestro Wallet. Get your QR-coded ticket.' },
                             { step: '03', icon: Ticket, title: 'Attend & Enjoy', desc: 'Show your QR ticket at the venue. Instant check-in. No hassle.' },
                         ].map((item) => (
                             <div key={item.step} className="glass-card p-8 relative group hover:border-primary-500/50 transition-all duration-300">
@@ -176,7 +163,7 @@ export default function Home() {
                                 Ready to host your <span className="gradient-text">next big event?</span>
                             </h2>
                             <p className="text-campus-muted mb-8 max-w-xl mx-auto">
-                                Join 300+ colleges already using CampusPass. Set up your event in minutes, sell tickets, and track everything.
+                                Set up your event in minutes, sell tickets, and track everything — all in one platform.
                             </p>
                             <Link to="/signup" className="btn-primary text-lg px-10 py-4 inline-flex items-center gap-2 group">
                                 Get Started Free

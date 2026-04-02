@@ -56,7 +56,7 @@ export default function OrganizerDashboard() {
         }
     };
 
-    const totalRevenue = events.reduce((sum, e) => sum + (e.ticketsSold * e.price), 0);
+    const totalRevenue = events.reduce((sum, e) => sum + (e.ticketsSold * (e.basePrice || e.price)), 0);
     const totalTicketsSold = events.reduce((sum, e) => sum + e.ticketsSold, 0);
 
     const getStatusIcon = (status) => {
@@ -84,7 +84,7 @@ export default function OrganizerDashboard() {
                 {[
                     { icon: Calendar, label: 'Total Events', value: events.length, color: 'text-primary-400' },
                     { icon: Ticket, label: 'Tickets Sold', value: totalTicketsSold, color: 'text-green-400' },
-                    { icon: DollarSign, label: 'Revenue', value: `₹${totalRevenue.toLocaleString('en-IN')}`, color: 'text-yellow-400' },
+                    { icon: DollarSign, label: 'Your Earnings', value: `₹${totalRevenue.toLocaleString('en-IN')}`, color: 'text-yellow-400' },
                     { icon: CheckCircle, label: 'Approved', value: events.filter(e => e.status === 'approved').length, color: 'text-blue-400' },
                 ].map((stat) => (
                     <div key={stat.label} className="glass-card p-6 text-center">
@@ -138,7 +138,10 @@ export default function OrganizerDashboard() {
                                         <span>{formatDate(event.date)}</span>
                                         <span>{event.venue}, {event.college}</span>
                                         <span>{event.ticketsSold}/{event.totalTickets} sold</span>
-                                        <span>{formatPrice(event.price)}</span>
+                                        <span>Your price: {formatPrice(event.basePrice || event.price)}</span>
+                                        {event.basePrice > 0 && event.price !== event.basePrice && (
+                                            <span className="text-campus-muted/60">Customer pays: {formatPrice(event.price)}</span>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="flex gap-2 flex-shrink-0">

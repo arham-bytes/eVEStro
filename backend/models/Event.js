@@ -47,6 +47,12 @@ const eventSchema = new mongoose.Schema(
             type: String,
             default: '',
         },
+        basePrice: {
+            type: Number,
+            required: true,
+            min: 0,
+            default: 0,
+        },
         price: {
             type: Number,
             required: true,

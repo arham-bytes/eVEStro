@@ -44,7 +44,7 @@ export default function Login() {
                         </div>
                     </Link>
                     <h1 className="text-3xl font-bold font-display mt-4">Welcome back</h1>
-                    <p className="text-campus-muted mt-2">Sign in to your CampusPass account</p>
+                    <p className="text-campus-muted mt-2">Sign in to your Evestro account</p>
                 </div>
 
                 <div className="glass-card p-8">

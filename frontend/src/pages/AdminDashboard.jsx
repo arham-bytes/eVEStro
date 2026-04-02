@@ -100,7 +100,7 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div className="mb-8">
                 <h1 className="section-heading mb-2">Admin <span className="gradient-text">Panel</span></h1>
-                <p className="text-campus-muted">Manage the entire CampusPass platform.</p>
+                <p className="text-campus-muted">Manage the entire Evestro platform.</p>
             </div>
 
             {/* Tabs */}

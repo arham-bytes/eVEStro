@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Users, Tag, Clock, CreditCard, Loader2, ArrowLeft, Share2, Ticket } from 'lucide-react';
+import { Calendar, MapPin, Users, Tag, Clock, CreditCard, Loader2, ArrowLeft, Share2, Ticket, Wallet } from 'lucide-react';
 import { formatDate, formatPrice, getCategoryBadgeClass } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
@@ -9,15 +9,19 @@ import toast from 'react-hot-toast';
 export default function EventDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, updateUser } = useAuth();
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [booking, setBooking] = useState(false);
     const [couponCode, setCouponCode] = useState('');
+    const [walletBalance, setWalletBalance] = useState(user?.walletBalance || 0);
 
     useEffect(() => {
         fetchEvent();
-    }, [id]);
+        if (isAuthenticated) {
+            fetchWalletBalance();
+        }
+    }, [id, isAuthenticated]);
 
     const fetchEvent = async () => {
         try {
@@ -28,6 +32,15 @@ export default function EventDetails() {
             navigate('/events');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchWalletBalance = async () => {
+        try {
+            const { data } = await api.get('/wallet');
+            setWalletBalance(data.data.balance);
+        } catch (error) {
+            // Wallet fetch failed silently
         }
     };
 
@@ -47,43 +60,25 @@ export default function EventDetails() {
                 return;
             }
 
-            // Paid event — create Razorpay order
-            const { data } = await api.post('/payments/create-order', { eventId: id, couponCode });
+            // Paid event — wallet only
+            if (walletBalance < event.price) {
+                toast.error(`Insufficient wallet balance! You need ₹${event.price} but have ₹${walletBalance}. Please add money to your wallet.`);
+                return;
+            }
 
-            // Load Razorpay
-            const options = {
-                key: data.key,
-                amount: data.order.amount,
-                currency: data.order.currency,
-                name: 'CampusPass',
-                description: event.title,
-                order_id: data.order.id,
-                handler: async (response) => {
-                    try {
-                        const verifyData = await api.post('/payments/verify', {
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                            eventId: id,
-                            couponCode,
-                        });
-                        toast.success('Payment successful! Ticket booked! 🎉');
-                        navigate('/dashboard');
-                    } catch (err) {
-                        toast.error('Payment verification failed');
-                    }
-                },
-                prefill: {
-                    name: user?.name,
-                    email: user?.email,
-                    contact: user?.phone || '',
-                },
-                theme: { color: '#6366f1' },
-            };
+            // Pay from wallet
+            const { data } = await api.post('/bookings', {
+                eventId: id,
+                couponCode,
+                paymentMethod: 'wallet',
+            });
 
-            const razorpay = new window.Razorpay(options);
-            razorpay.on('payment.failed', () => toast.error('Payment failed. Please try again.'));
-            razorpay.open();
+            if (data.success && data.data) {
+                toast.success('Ticket booked with wallet! 🎉');
+                setWalletBalance(data.walletBalance);
+                updateUser({ ...user, walletBalance: data.walletBalance });
+                navigate('/dashboard');
+            }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Booking failed');
         } finally {
@@ -103,6 +98,7 @@ export default function EventDetails() {
 
     const available = event.totalTickets - event.ticketsSold;
     const soldPercentage = Math.round((event.ticketsSold / event.totalTickets) * 100);
+    const hasEnoughBalance = walletBalance >= event.price;
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -214,20 +210,58 @@ export default function EventDetails() {
                             </div>
                         )}
 
+                        {/* Wallet Balance (for logged-in users with paid events) */}
+                        {isAuthenticated && event.price > 0 && (
+                            <div className="flex items-center justify-between p-3 rounded-xl bg-campus-dark/50 border border-campus-border/30">
+                                <div className="flex items-center gap-2">
+                                    <Wallet className="w-4 h-4 text-yellow-400" />
+                                    <span className="text-sm text-campus-muted">Wallet Balance</span>
+                                </div>
+                                <span className={`text-sm font-semibold ${hasEnoughBalance ? 'text-green-400' : 'text-red-400'}`}>
+                                    ₹{walletBalance.toLocaleString('en-IN')}
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Insufficient balance warning */}
+                        {isAuthenticated && event.price > 0 && !hasEnoughBalance && (
+                            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20">
+                                <p className="text-xs text-red-400 mb-2">
+                                    Insufficient balance. You need ₹{event.price} to book.
+                                </p>
+                                <a href="/wallet" className="text-xs text-primary-400 font-semibold hover:underline">
+                                    + Add Money to Wallet →
+                                </a>
+                            </div>
+                        )}
+
                         {/* Book Button */}
                         <button
                             onClick={handleBooking}
                             disabled={booking || available <= 0}
-                            className="btn-primary w-full flex items-center justify-center gap-2 text-lg"
+                            className={`w-full flex items-center justify-center gap-2 text-lg py-3 px-6 rounded-xl font-semibold transition-all duration-200 ${
+                                event.price === 0
+                                    ? 'btn-primary'
+                                    : hasEnoughBalance
+                                        ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 text-yellow-400 hover:border-yellow-400/60 hover:shadow-lg hover:shadow-yellow-500/10'
+                                        : 'bg-campus-dark border border-campus-border text-campus-muted cursor-not-allowed opacity-60'
+                            }`}
                         >
                             {booking ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />
                             ) : available <= 0 ? (
                                 'Sold Out'
+                            ) : event.price === 0 ? (
+                                <>
+                                    <Ticket className="w-5 h-5" /> Book Free Ticket
+                                </>
+                            ) : hasEnoughBalance ? (
+                                <>
+                                    <Wallet className="w-5 h-5" /> Pay ₹{event.price} from Wallet
+                                </>
                             ) : (
                                 <>
-                                    <Ticket className="w-5 h-5" />
-                                    {event.price === 0 ? 'Book Free Ticket' : `Pay ${formatPrice(event.price)}`}
+                                    <Wallet className="w-5 h-5" /> Insufficient Balance
                                 </>
                             )}
                         </button>
@@ -248,3 +282,4 @@ export default function EventDetails() {
         </div>
     );
 }
+

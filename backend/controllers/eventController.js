@@ -12,6 +12,9 @@ exports.eventValidation = [
     body('totalTickets').isInt({ min: 1 }).withMessage('Total tickets must be at least 1'),
 ];
 
+// Platform markup percentage (10%)
+const PLATFORM_MARKUP = 0.10;
+
 // @desc    Get all approved events (public)
 // @route   GET /api/events
 exports.getEvents = async (req, res, next) => {
@@ -82,9 +85,16 @@ exports.createEvent = async (req, res, next) => {
             return res.status(400).json({ success: false, errors: errors.array() });
         }
 
+        // Organizer sends 'price' as their base price
+        const basePrice = Number(req.body.price) || 0;
+        // Customer-facing price = base price + 10% platform fee (rounded up)
+        const customerPrice = basePrice > 0 ? Math.ceil(basePrice * (1 + PLATFORM_MARKUP)) : 0;
+
         const eventData = {
             ...req.body,
             organizer: req.user._id,
+            basePrice,
+            price: customerPrice,
         };
 
         // Handle image upload
@@ -118,6 +128,13 @@ exports.updateEvent = async (req, res, next) => {
 
         if (req.file) {
             req.body.image = req.file.path || req.file.url || `/uploads/${req.file.filename}`;
+        }
+
+        // Recalculate markup if price is being updated
+        if (req.body.price !== undefined) {
+            const basePrice = Number(req.body.price) || 0;
+            req.body.basePrice = basePrice;
+            req.body.price = basePrice > 0 ? Math.ceil(basePrice * (1 + PLATFORM_MARKUP)) : 0;
         }
 
         event = await Event.findByIdAndUpdate(req.params.id, req.body, {

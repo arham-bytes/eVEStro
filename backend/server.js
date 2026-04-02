@@ -12,6 +12,7 @@ const eventRoutes = require('./routes/events');
 const bookingRoutes = require('./routes/bookings');
 const paymentRoutes = require('./routes/payments');
 const adminRoutes = require('./routes/admin');
+const walletRoutes = require('./routes/wallet');
 
 const app = express();
 
@@ -47,10 +48,11 @@ app.use('/api/events', eventRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/wallet', walletRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-    res.json({ success: true, message: 'CampusPass API is running 🚀' });
+    res.json({ success: true, message: 'Evestro API is running 🚀' });
 });
 
 // Error handler
@@ -64,7 +66,7 @@ app.use('*', (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`\n🚀 CampusPass API running on port ${PORT}`);
+    console.log(`\n🚀 Evestro API running on port ${PORT}`);
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔗 URL: http://localhost:${PORT}\n`);
 });

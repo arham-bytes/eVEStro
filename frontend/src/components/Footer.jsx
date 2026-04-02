@@ -54,12 +54,12 @@ export default function Footer() {
                                 </a>
                             ))}
                         </div>
-                        <p className="text-campus-muted text-sm">hello@campuspass.in</p>
+                        <p className="text-campus-muted text-sm">hello@evestro.in</p>
                     </div>
                 </div>
 
                 <div className="border-t border-campus-border/30 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-campus-muted text-sm">© 2026 CampusPass. Built with ❤️ for Indian colleges.</p>
+                    <p className="text-campus-muted text-sm">© 2026 Evestro. Built with ❤️ for Indian colleges.</p>
                     <div className="flex gap-6">
                         <a href="#" className="text-campus-muted hover:text-primary-400 text-sm transition-colors">Privacy</a>
                         <a href="#" className="text-campus-muted hover:text-primary-400 text-sm transition-colors">Terms</a>

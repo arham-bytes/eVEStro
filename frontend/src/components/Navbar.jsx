@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Menu, X, Ticket, User, LogOut, LayoutDashboard, Plus, Shield } from 'lucide-react';
+import { Menu, X, Ticket, User, LogOut, LayoutDashboard, Plus, Shield, Wallet } from 'lucide-react';
 
 export default function Navbar() {
     const { user, isAuthenticated, logout } = useAuth();
@@ -52,6 +52,11 @@ export default function Navbar() {
                                 <Plus className="w-4 h-4" /> Create Event
                             </Link>
                         )}
+                        {isAuthenticated && (
+                            <Link to="/wallet" className="px-4 py-2 rounded-lg text-sm font-medium text-campus-muted hover:text-white hover:bg-campus-card transition-all flex items-center gap-1">
+                                <Wallet className="w-4 h-4" /> ₹{(user?.walletBalance || 0).toLocaleString('en-IN')}
+                            </Link>
+                        )}
                     </div>
 
                     {/* Auth Section */}
@@ -85,6 +90,10 @@ export default function Navbar() {
                                                 <Shield className="w-4 h-4" /> Admin Panel
                                             </Link>
                                         )}
+                                        <Link to="/wallet" onClick={() => setProfileOpen(false)}
+                                            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-campus-muted hover:text-white hover:bg-campus-dark transition-all">
+                                            <Wallet className="w-4 h-4" /> Wallet — ₹{(user?.walletBalance || 0).toLocaleString('en-IN')}
+                                        </Link>
                                         <button onClick={handleLogout}
                                             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all">
                                             <LogOut className="w-4 h-4" /> Logout
@@ -119,6 +128,9 @@ export default function Navbar() {
                                 {user?.role === 'organizer' && (
                                     <Link to="/organizer/create" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-xl text-campus-muted hover:text-white hover:bg-campus-card transition-all">Create Event</Link>
                                 )}
+                                <Link to="/wallet" onClick={() => setIsOpen(false)} className="px-4 py-3 rounded-xl text-campus-muted hover:text-white hover:bg-campus-card transition-all flex items-center gap-2">
+                                    <Wallet className="w-4 h-4" /> Wallet — ₹{(user?.walletBalance || 0).toLocaleString('en-IN')}
+                                </Link>
                                 <button onClick={() => { handleLogout(); setIsOpen(false); }} className="block w-full text-left px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-all">
                                     Logout
                                 </button>

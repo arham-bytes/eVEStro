@@ -11,6 +11,7 @@ import StudentDashboard from './pages/StudentDashboard';
 import OrganizerDashboard from './pages/OrganizerDashboard';
 import CreateEvent from './pages/CreateEvent';
 import AdminDashboard from './pages/AdminDashboard';
+import Wallet from './pages/Wallet';
 
 export default function App() {
     return (
@@ -38,6 +39,10 @@ export default function App() {
                     <Route
                         path="/admin"
                         element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/wallet"
+                        element={<ProtectedRoute roles={['student', 'organizer', 'admin']}><Wallet /></ProtectedRoute>}
                     />
                 </Routes>
             </main>

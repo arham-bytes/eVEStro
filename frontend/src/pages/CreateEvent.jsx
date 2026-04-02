@@ -130,9 +130,15 @@ export default function CreateEvent() {
                 {/* Price & Tickets */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium mb-2 flex items-center gap-2"><DollarSign className="w-4 h-4 text-primary-400" /> Price (₹) *</label>
+                        <label className="block text-sm font-medium mb-2 flex items-center gap-2"><DollarSign className="w-4 h-4 text-primary-400" /> Your Price (₹) *</label>
                         <input type="number" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
                             className="input-field" placeholder="0 for free" />
+                        {form.price > 0 && (
+                            <p className="text-xs mt-2 text-campus-muted">
+                                Customers will pay <span className="text-primary-400 font-semibold">₹{Math.ceil(form.price * 1.10).toLocaleString('en-IN')}</span>
+                                <span className="text-campus-muted/60"> (includes 10% platform fee)</span>
+                            </p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-2 flex items-center gap-2"><Users className="w-4 h-4 text-primary-400" /> Total Tickets *</label>
