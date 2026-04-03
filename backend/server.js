@@ -23,6 +23,7 @@ connectDB();
 const allowedOrigins = [
     'http://localhost:5173',
     process.env.CLIENT_URL,
+    'https://evestro.vercel.app'
 ].filter(Boolean);
 
 app.use(cors({
