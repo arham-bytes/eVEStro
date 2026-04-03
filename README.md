@@ -1,4 +1,4 @@
-# 🎫 CampusPass — College Event Management & Ticketing Platform
+# 🎫 eVEStro — College Event Management & Ticketing Platform
 
 > India's #1 college event platform. Discover, book, and manage campus events seamlessly.
 
@@ -47,7 +47,7 @@
 ## 📁 Project Structure
 
 ```
-campuspass/
+evestro/
 ├── backend/
 │   ├── config/          # DB, Cloudinary configs
 │   ├── controllers/     # Auth, Event, Booking, Payment, Admin
@@ -110,7 +110,7 @@ Register a user via the signup page, then manually update their role in MongoDB:
 
 ```javascript
 // In MongoDB shell or Atlas
-db.users.updateOne({ email: "admin@campuspass.in" }, { $set: { role: "admin" } })
+db.users.updateOne({ email: "admin@evestro.in" }, { $set: { role: "admin" } })
 ```
 
 ---
@@ -122,7 +122,7 @@ Create `backend/.env` from `.env.example`:
 ```env
 PORT=5000
 NODE_ENV=development
-MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/campuspass
+MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/evestro
 JWT_SECRET=your_super_secret_jwt_key
 JWT_EXPIRE=30d
 
@@ -218,4 +218,4 @@ CLIENT_URL=http://localhost:5173
 
 ## 📄 License
 
-MIT © CampusPass 2026
+MIT © eVEStro 2026
