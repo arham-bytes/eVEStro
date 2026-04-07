@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const Event = require('../models/Event');
 const Booking = require('../models/Booking');
-const Payment = require('../models/Payment');
+const WalletTransaction = require('../models/WalletTransaction');
 
 // @desc    Get admin dashboard stats
 // @route   GET /api/admin/dashboard
@@ -11,8 +11,8 @@ exports.getDashboard = async (req, res, next) => {
             User.countDocuments(),
             Event.countDocuments(),
             Booking.countDocuments({ status: { $ne: 'cancelled' } }),
-            Payment.aggregate([
-                { $match: { status: 'paid' } },
+            WalletTransaction.aggregate([
+                { $match: { type: 'credit', status: 'completed' } },
                 { $group: { _id: null, total: { $sum: '$amount' } } },
             ]),
         ]);
@@ -35,8 +35,8 @@ exports.getDashboard = async (req, res, next) => {
         const sixMonthsAgo = new Date();
         sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-        const monthlyRevenue = await Payment.aggregate([
-            { $match: { status: 'paid', createdAt: { $gte: sixMonthsAgo } } },
+        const monthlyRevenue = await WalletTransaction.aggregate([
+            { $match: { type: 'credit', status: 'completed', createdAt: { $gte: sixMonthsAgo } } },
             {
                 $group: {
                     _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
@@ -185,17 +185,16 @@ exports.toggleUserStatus = async (req, res, next) => {
 exports.getTransactions = async (req, res, next) => {
     try {
         const { page = 1, limit = 20 } = req.query;
-        const total = await Payment.countDocuments();
-        const payments = await Payment.find()
+        const total = await WalletTransaction.countDocuments();
+        const transactions = await WalletTransaction.find()
             .populate('user', 'name email')
-            .populate('event', 'title')
             .sort({ createdAt: -1 })
             .skip((page - 1) * limit)
             .limit(parseInt(limit));
 
         res.json({
             success: true,
-            data: payments,
+            data: transactions,
             pagination: { page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / limit) },
         });
     } catch (error) {
