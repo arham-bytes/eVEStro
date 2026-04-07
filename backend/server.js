@@ -5,12 +5,11 @@ require('dotenv').config();
 
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
-
-// Route imports
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');// Route imports
 const authRoutes = require('./routes/auth');
 const eventRoutes = require('./routes/events');
 const bookingRoutes = require('./routes/bookings');
-const paymentRoutes = require('./routes/payments');
 const adminRoutes = require('./routes/admin');
 const walletRoutes = require('./routes/wallet');
 
@@ -20,6 +19,18 @@ const app = express();
 connectDB();
 
 // Middleware
+app.use(helmet());
+// Allow cross-origin image requests (cloudinary)
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+
+// Rate Limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000, // 1000 requests per IP per windowMs. High for testing, should be lower for prod.
+    message: 'Too many requests from this IP, please try again later.',
+});
+app.use('/api/', limiter);
+
 const allowedOrigins = [
     'http://localhost:5173',
     process.env.CLIENT_URL,
@@ -47,7 +58,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/bookings', bookingRoutes);
-app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/wallet', walletRoutes);
 

@@ -93,18 +93,21 @@ exports.createBooking = async (req, res, next) => {
 
         // WALLET PAYMENT
         if (paymentMethod === 'wallet') {
-            const user = await User.findById(req.user._id);
+            // Atomically check and deduct balance to prevent double-spend race conditions
+            const user = await User.findOneAndUpdate(
+                { _id: req.user._id, walletBalance: { $gte: totalAmount } },
+                { $inc: { walletBalance: -totalAmount } },
+                { new: true }
+            );
 
-            if (user.walletBalance < totalAmount) {
+            if (!user) {
+                // Determine exact current balance for helpful error message
+                const currentUser = await User.findById(req.user._id);
                 return res.status(400).json({
                     success: false,
-                    message: `Insufficient wallet balance. You need ₹${totalAmount} but have ₹${user.walletBalance}`,
+                    message: `Insufficient wallet balance. You need ₹${totalAmount} but have ₹${currentUser.walletBalance || 0}`,
                 });
             }
-
-            // Debit wallet
-            user.walletBalance -= totalAmount;
-            await user.save();
 
             // Create wallet transaction
             await WalletTransaction.create({

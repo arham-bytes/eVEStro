@@ -1,0 +1,41 @@
+﻿# npm audit report
+
+cloudinary  <2.7.0
+Severity: high
+Cloudinary Node SDK is vulnerable to Arbitrary Argument Injection through parameters that include an ampersand - https://github.com/advisories/GHSA-g4mf-96x5-5m2c
+fix available via `npm audit fix --force`
+Will install cloudinary@2.9.0, which is a breaking change
+node_modules/cloudinary
+  multer-storage-cloudinary  >=3.0.0
+  Depends on vulnerable versions of cloudinary
+  node_modules/multer-storage-cloudinary
+
+lodash  <=4.17.23
+Severity: high
+lodash vulnerable to Code Injection via `_.template` imports key names - https://github.com/advisories/GHSA-r5fr-rjxr-66jc
+lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit` - https://github.com/advisories/GHSA-f23m-r3pf-42rh
+fix available via `npm audit fix`
+node_modules/lodash
+
+nodemailer  <=8.0.3
+Severity: high
+Nodemailer: Email to an unintended domain can occur due to Interpretation Conflict - https://github.com/advisories/GHSA-mm7p-fcc7-pg87
+NodemailerΓÇÖs addressparser is vulnerable to DoS caused by recursive calls - https://github.com/advisories/GHSA-rcmh-qjqh-p98v
+Nodemailer has SMTP command injection due to unsanitized `envelope.size` parameter - https://github.com/advisories/GHSA-c7w3-x93f-qmm8
+fix available via `npm audit fix --force`
+Will install nodemailer@8.0.5, which is a breaking change
+node_modules/nodemailer
+
+path-to-regexp  <0.1.13
+Severity: high
+path-to-regexp vulnerable to Regular Expression Denial of Service via multiple route parameters - https://github.com/advisories/GHSA-37ch-88jc-xwx2
+fix available via `npm audit fix`
+node_modules/path-to-regexp
+
+5 high severity vulnerabilities
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
