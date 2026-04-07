@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, Ticket, Loader2 } from 'lucide-react';
@@ -11,8 +11,15 @@ export default function Signup() {
     });
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
-    const { register } = useAuth();
+    const { register, isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            const dest = user.role === 'admin' ? '/admin' : user.role === 'organizer' ? '/organizer' : '/dashboard';
+            navigate(dest, { replace: true });
+        }
+    }, [isAuthenticated, user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

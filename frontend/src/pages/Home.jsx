@@ -1,12 +1,29 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Sparkles, Users, Calendar, CreditCard, Ticket, Star, Zap, Shield, TrendingUp } from 'lucide-react';
 import api from '../api/axios';
 import EventCard from '../components/EventCard';
+import { useAuth } from '../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 export default function Home() {
     const [featuredEvents, setFeaturedEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { user, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+
+    const handleOrganizeClick = (e) => {
+        e.preventDefault();
+        if (!isAuthenticated) {
+            navigate('/signup');
+        } else if (user?.role === 'student') {
+            toast.error("Students are not allowed to organise events.");
+        } else if (user?.role === 'organizer') {
+            navigate('/organizer/create');
+        } else if (user?.role === 'admin') {
+            navigate('/admin');
+        }
+    };
 
     useEffect(() => {
         const fetchFeatured = async () => {
@@ -66,9 +83,9 @@ export default function Home() {
                                 Explore Events
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </Link>
-                            <Link to="/signup" className="btn-secondary text-lg px-8 py-4">
+                            <button onClick={handleOrganizeClick} className="btn-secondary text-lg px-8 py-4">
                                 Start Organizing
-                            </Link>
+                            </button>
                         </div>
                     </div>
 
@@ -165,10 +182,10 @@ export default function Home() {
                             <p className="text-campus-muted mb-8 max-w-xl mx-auto">
                                 Set up your event in minutes, sell tickets, and track everything — all in one platform.
                             </p>
-                            <Link to="/signup" className="btn-primary text-lg px-10 py-4 inline-flex items-center gap-2 group">
-                                Get Started Free
+                            <button onClick={handleOrganizeClick} className="btn-primary text-lg px-10 py-4 inline-flex items-center gap-2 group">
+                                {isAuthenticated && user?.role === 'organizer' ? 'Create Event Now' : 'Get Started Free'}
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </Link>
+                            </button>
                         </div>
                     </div>
                 </div>
