@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Users, Tag, Clock, CreditCard, Loader2, ArrowLeft, Share2, Ticket, Wallet } from 'lucide-react';
+import { QRCodeCanvas } from 'qrcode.react';
+import { Calendar, MapPin, Users, Tag, Clock, CreditCard, Loader2, ArrowLeft, Share2, Ticket, Wallet, QrCode, Download, X } from 'lucide-react';
 import { formatDate, formatPrice, getCategoryBadgeClass } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
@@ -15,6 +16,7 @@ export default function EventDetails() {
     const [booking, setBooking] = useState(false);
     const [couponCode, setCouponCode] = useState('');
     const [walletBalance, setWalletBalance] = useState(user?.walletBalance || 0);
+    const [showShareQR, setShowShareQR] = useState(false);
 
     useEffect(() => {
         fetchEvent();
@@ -83,6 +85,19 @@ export default function EventDetails() {
             toast.error(error.response?.data?.message || 'Booking failed');
         } finally {
             setBooking(false);
+        }
+    };
+
+    const downloadQR = () => {
+        const canvas = document.getElementById('share-qr-code');
+        if (canvas) {
+            const pngUrl = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+            const downloadLink = document.createElement('a');
+            downloadLink.href = pngUrl;
+            downloadLink.download = `event-${id}-qr.png`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
         }
     };
 
@@ -267,18 +282,53 @@ export default function EventDetails() {
                         </button>
 
                         {/* Share */}
-                        <button
-                            onClick={() => {
-                                navigator.clipboard.writeText(window.location.href);
-                                toast.success('Link copied!');
-                            }}
-                            className="btn-secondary w-full flex items-center justify-center gap-2 text-sm"
-                        >
-                            <Share2 className="w-4 h-4" /> Share Event
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    toast.success('Link copied!');
+                                }}
+                                className="btn-secondary flex-1 flex items-center justify-center gap-2 text-sm"
+                            >
+                                <Share2 className="w-4 h-4" /> Copy Link
+                            </button>
+                            <button
+                                onClick={() => setShowShareQR(true)}
+                                className="btn-secondary !bg-primary-500/10 !text-primary-400 !border-primary-500/30 hover:!bg-primary-500/20 flex-1 flex items-center justify-center gap-2 text-sm"
+                            >
+                                <QrCode className="w-4 h-4" /> Share QR
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            {/* Share QR Modal */}
+            {showShareQR && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowShareQR(false)}>
+                    <div className="glass-card p-8 max-w-sm w-full text-center animate-slide-up relative" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={() => setShowShareQR(false)} className="absolute top-4 right-4 text-campus-muted hover:text-white transition-colors">
+                            <X className="w-5 h-5" />
+                        </button>
+                        <h3 className="text-xl font-semibold mb-2">Share this Event</h3>
+                        <p className="text-sm text-campus-muted mb-6">Let your friends scan this QR code to view the event online.</p>
+                        <div className="bg-white rounded-2xl p-4 inline-block mb-6">
+                            <QRCodeCanvas
+                                id="share-qr-code"
+                                value={window.location.href}
+                                size={200}
+                                bgColor={"#ffffff"}
+                                fgColor={"#000000"}
+                                level={"H"}
+                                marginSize={1}
+                            />
+                        </div>
+                        <button onClick={downloadQR} className="btn-primary w-full flex justify-center items-center gap-2">
+                            <Download className="w-4 h-4" /> Download QR
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

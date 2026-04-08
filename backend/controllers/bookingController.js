@@ -223,18 +223,19 @@ exports.getEventBookings = async (req, res, next) => {
 exports.verifyTicket = async (req, res, next) => {
     try {
         const booking = await Booking.findOne({ ticketId: req.params.ticketId })
-            .populate('event', 'title date venue organizer')
+            .populate('event', 'title date venue organizer volunteers')
             .populate('user', 'name email');
 
         if (!booking) {
             return res.status(404).json({ success: false, message: 'Invalid ticket' });
         }
 
-        // Verify organizer owns this event
-        if (
-            booking.event.organizer.toString() !== req.user._id.toString() &&
-            req.user.role !== 'admin'
-        ) {
+        // Verify organizer owns this event or user is a volunteer
+        const isOrganizer = booking.event.organizer.toString() === req.user._id.toString();
+        const isVolunteer = booking.event.volunteers && booking.event.volunteers.includes(req.user._id);
+        const isAdmin = req.user.role === 'admin';
+
+        if (!isOrganizer && !isVolunteer && !isAdmin) {
             return res.status(403).json({ success: false, message: 'Not authorized to verify this ticket' });
         }
 

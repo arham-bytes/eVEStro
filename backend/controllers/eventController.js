@@ -1,4 +1,5 @@
 const Event = require('../models/Event');
+const User = require('../models/User');
 const { validationResult, body } = require('express-validator');
 
 exports.eventValidation = [
@@ -174,6 +175,7 @@ exports.deleteEvent = async (req, res, next) => {
 exports.getMyEvents = async (req, res, next) => {
     try {
         const events = await Event.find({ organizer: req.user._id })
+            .populate('volunteers', 'name email')
             .sort({ createdAt: -1 });
 
         res.json({ success: true, data: events });
@@ -201,6 +203,57 @@ exports.addCoupon = async (req, res, next) => {
         await event.save();
 
         res.json({ success: true, data: event });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Add volunteer to event
+// @route   POST /api/events/:id/volunteers
+exports.addVolunteer = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const event = await Event.findById(req.params.id);
+
+        if (!event) {
+            return res.status(404).json({ success: false, message: 'Event not found' });
+        }
+
+        if (event.organizer.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Not authorized' });
+        }
+
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User with this email not found' });
+        }
+
+        if (event.volunteers.includes(user._id)) {
+            return res.status(400).json({ success: false, message: 'User is already a volunteer for this event' });
+        }
+
+        if (event.organizer.toString() === user._id.toString()) {
+            return res.status(400).json({ success: false, message: 'Organizer cannot be added as a volunteer' });
+        }
+
+        event.volunteers.push(user._id);
+        await event.save();
+
+        res.json({ success: true, message: 'Volunteer added successfully', data: event });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Get events where user is a volunteer
+// @route   GET /api/events/volunteer/events
+exports.getVolunteerEvents = async (req, res, next) => {
+    try {
+        const events = await Event.find({ volunteers: req.user._id })
+            .sort({ createdAt: -1 })
+            .populate('organizer', 'name college');
+
+        res.json({ success: true, data: events });
     } catch (error) {
         next(error);
     }

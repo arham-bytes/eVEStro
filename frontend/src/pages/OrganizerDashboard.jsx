@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, BarChart3, Users, Ticket, DollarSign, Calendar, Eye, QrCode, Loader2, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Plus, BarChart3, Users, Ticket, DollarSign, Calendar, Eye, QrCode, Loader2, CheckCircle, XCircle, Clock, X, Shield } from 'lucide-react';
 import { formatDate, formatPrice, getCategoryBadgeClass } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
@@ -15,6 +15,11 @@ export default function OrganizerDashboard() {
     const [bookingsLoading, setBookingsLoading] = useState(false);
     const [scanTicketId, setScanTicketId] = useState('');
     const [scanResult, setScanResult] = useState(null);
+    
+    // Volunteers
+    const [selectedVolunteerEvent, setSelectedVolunteerEvent] = useState(null);
+    const [volunteerEmail, setVolunteerEmail] = useState('');
+    const [addingVolunteer, setAddingVolunteer] = useState(false);
 
     useEffect(() => {
         fetchMyEvents();
@@ -53,6 +58,22 @@ export default function OrganizerDashboard() {
         } catch (error) {
             setScanResult({ success: false, message: error.response?.data?.message || 'Verification failed' });
             toast.error(error.response?.data?.message || 'Verification failed');
+        }
+    };
+
+    const handleAddVolunteer = async () => {
+        if (!volunteerEmail.trim()) return;
+        setAddingVolunteer(true);
+        try {
+            await api.post(`/events/${selectedVolunteerEvent._id}/volunteers`, { email: volunteerEmail });
+            toast.success('Volunteer added successfully!');
+            setVolunteerEmail('');
+            // Refetch events to get updated volunteers
+            fetchMyEvents();
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to add volunteer');
+        } finally {
+            setAddingVolunteer(false);
         }
     };
 
@@ -145,6 +166,10 @@ export default function OrganizerDashboard() {
                                     </div>
                                 </div>
                                 <div className="flex gap-2 flex-shrink-0">
+                                    <button onClick={() => setSelectedVolunteerEvent(event)}
+                                        className="btn-secondary text-sm !px-3 !py-2 flex items-center gap-1">
+                                        <Shield className="w-4 h-4" /> Volunteers
+                                    </button>
                                     <button onClick={() => { setSelectedEvent(selectedEvent === event._id ? null : event._id); fetchBookings(event._id); }}
                                         className="btn-secondary text-sm !px-3 !py-2 flex items-center gap-1">
                                         <Users className="w-4 h-4" /> Registrations
@@ -186,6 +211,52 @@ export default function OrganizerDashboard() {
                             )}
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* Volunteer Management Modal */}
+            {selectedVolunteerEvent && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedVolunteerEvent(null)}>
+                    <div className="glass-card p-6 max-w-md w-full animate-slide-up relative" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={() => setSelectedVolunteerEvent(null)} className="absolute top-4 right-4 text-campus-muted hover:text-white">
+                            <X className="w-5 h-5" />
+                        </button>
+                        <h2 className="text-xl font-semibold mb-2">Manage Volunteers</h2>
+                        <p className="text-sm text-campus-muted mb-6">Volunteers can scan check-in QR codes using their own accounts for <strong className="text-white">{selectedVolunteerEvent.title}</strong>.</p>
+                        
+                        <div className="mb-6">
+                            <h3 className="font-medium mb-3">Current Volunteers</h3>
+                            {selectedVolunteerEvent.volunteers && selectedVolunteerEvent.volunteers.length > 0 ? (
+                                <ul className="space-y-2">
+                                    {selectedVolunteerEvent.volunteers.map(v => (
+                                        <li key={v._id} className="text-sm bg-campus-dark px-3 py-2 rounded flex justify-between items-center">
+                                            <span>{v.name}</span>
+                                            <span className="text-campus-muted text-xs">{v.email}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-sm text-campus-muted">No volunteers added yet.</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <h3 className="font-medium mb-2">Add Volunteer</h3>
+                            <div className="flex gap-2 text-sm">
+                                <input 
+                                    type="email" 
+                                    className="input-field flex-1" 
+                                    placeholder="Registered user's email" 
+                                    value={volunteerEmail}
+                                    onChange={e => setVolunteerEmail(e.target.value)}
+                                    onKeyDown={e => e.key === 'Enter' && handleAddVolunteer()}
+                                />
+                                <button onClick={handleAddVolunteer} disabled={addingVolunteer || !volunteerEmail.trim()} className="btn-primary flex-shrink-0">
+                                    {addingVolunteer ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Add'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

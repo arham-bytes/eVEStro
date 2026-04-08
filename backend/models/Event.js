@@ -88,6 +88,10 @@ const eventSchema = new mongoose.Schema(
         },
         coupons: [couponSchema],
         tags: [String],
+        volunteers: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }],
     },
     { timestamps: true }
 );

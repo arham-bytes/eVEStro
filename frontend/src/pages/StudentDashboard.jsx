@@ -4,6 +4,7 @@ import { formatDate, formatPrice, getCategoryBadgeClass } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
+import toast from 'react-hot-toast';
 
 export default function StudentDashboard() {
     const { user } = useAuth();
@@ -11,8 +12,14 @@ export default function StudentDashboard() {
     const [loading, setLoading] = useState(true);
     const [selectedBooking, setSelectedBooking] = useState(null);
 
+    // Volunteer
+    const [volunteerEvents, setVolunteerEvents] = useState([]);
+    const [scanTicketId, setScanTicketId] = useState('');
+    const [scanResult, setScanResult] = useState(null);
+
     useEffect(() => {
         fetchBookings();
+        fetchVolunteerEvents();
     }, []);
 
     const fetchBookings = async () => {
@@ -23,6 +30,28 @@ export default function StudentDashboard() {
             setBookings([]);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchVolunteerEvents = async () => {
+        try {
+            const { data } = await api.get('/events/volunteer/events');
+            setVolunteerEvents(data.data || []);
+        } catch (error) {
+            setVolunteerEvents([]);
+        }
+    };
+
+    const handleVerifyTicket = async () => {
+        if (!scanTicketId.trim()) return;
+        try {
+            const { data } = await api.post(`/bookings/verify/${scanTicketId}`);
+            setScanResult({ success: true, message: data.message, data: data.data });
+            toast.success('Ticket verified! ✅');
+            setScanTicketId('');
+        } catch (error) {
+            setScanResult({ success: false, message: error.response?.data?.message || 'Verification failed' });
+            toast.error(error.response?.data?.message || 'Verification failed');
         }
     };
 
@@ -108,6 +137,26 @@ export default function StudentDashboard() {
                             className="btn-secondary text-sm !px-3 !py-2"
                         >Copy</button>
                     </div>
+                </div>
+            )}
+
+            {/* Volunteer Check-in Scanner */}
+            {volunteerEvents.length > 0 && (
+                <div className="glass-card p-6 mb-8 border border-primary-500/30">
+                    <h2 className="text-lg font-semibold mb-2 flex items-center gap-2"><QrCode className="w-5 h-5 text-primary-400" /> Volunteer Check-in Scanner</h2>
+                    <p className="text-sm text-campus-muted mb-4">You are a volunteer for {volunteerEvents.length} event(s). Scan tickets below.</p>
+                    <div className="flex gap-2">
+                        <input type="text" value={scanTicketId} onChange={(e) => setScanTicketId(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleVerifyTicket()}
+                            className="input-field flex-1" placeholder="Enter or scan Ticket ID (e.g. CP-XXXXXXXXXXXX)" />
+                        <button onClick={handleVerifyTicket} className="btn-primary">Verify</button>
+                    </div>
+                    {scanResult && (
+                        <div className={`mt-3 p-3 rounded-xl text-sm ${scanResult.success ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                            {scanResult.message}
+                            {scanResult.data && <span> — {scanResult.data.attendee} for {scanResult.data.event}</span>}
+                        </div>
+                    )}
                 </div>
             )}
 
