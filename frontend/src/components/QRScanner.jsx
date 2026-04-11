@@ -6,13 +6,13 @@ export default function QRScanner({ onScan, onClose }) {
     const scannerRef = useRef(null);
     const SCANNER_ID = 'reader';
 
-    const isRendering = useRef(false);
-
     useEffect(() => {
-        if (isRendering.current) return;
-        isRendering.current = true;
+        // One-shot fix for double camera and initialization issues
+        const container = document.getElementById(SCANNER_ID);
+        if (container) {
+            container.innerHTML = ""; // Force clear before any initialization
+        }
 
-        // Initialize scanner using the reliable high-level scanner
         const scanner = new Html5QrcodeScanner(
             SCANNER_ID,
             {
@@ -31,49 +31,46 @@ export default function QRScanner({ onScan, onClose }) {
                 onScan(decodedText);
                 scanner.clear().catch(err => console.error("Scanner clear error:", err));
             },
-            (error) => {}
+            (error) => {
+                // Ignore frame errors
+            }
         );
 
         scannerRef.current = scanner;
 
         return () => {
             if (scannerRef.current) {
-                scannerRef.current.clear().then(() => {
-                    isRendering.current = false;
-                }).catch(err => {
+                scannerRef.current.clear().catch(err => {
                     console.error("Cleanup error:", err);
-                    isRendering.current = false;
+                    // If clear fails, manually wipe the DOM so next mount is clean
+                    if (container) container.innerHTML = "";
                 });
             }
         };
     }, []);
 
     return (
-        <div className="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center animate-fade-in sm:p-4">
-            {/* Custom Header Overlay */}
+        <div className="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center animate-fade-in p-4">
+            {/* Header */}
             <div className="absolute top-0 left-0 w-full p-6 flex items-center justify-between z-[110] bg-gradient-to-b from-black/80 to-transparent">
                 <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
-                    <span className="text-sm font-medium tracking-widest uppercase">Professional Scanner</span>
+                    <span className="text-sm font-medium tracking-widest uppercase text-white">Security Scanner</span>
                 </div>
                 <button 
                     onClick={onClose}
-                    className="p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all active:scale-90"
+                    className="p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all active:scale-90 text-white"
                 >
                     <X className="w-6 h-6" />
                 </button>
             </div>
 
-            <div className="glass-card w-full max-w-lg overflow-hidden relative animate-scale-in p-2">
-                {/* 
-                  We apply CSS overrides in index.css (or inline style) to style the internal 
-                  buttons of html5-qrcode-scanner to match our theme.
-                */}
-                <div id={SCANNER_ID} className="rounded-xl overflow-hidden qr-scanner-wrapper" />
+            <div className="glass-card w-full max-w-lg overflow-hidden relative animate-scale-in p-2 mt-12">
+                <div id={SCANNER_ID} className="rounded-xl overflow-hidden" />
                 
                 <p className="mt-4 text-xs text-campus-muted text-center pb-4">
                     Position the QR code inside the frame. <br/>
-                    <span className="opacity-60 italic mt-1 block">Works best in Chrome or Safari</span>
+                    <span className="opacity-60 italic mt-1 block">Works best in Chrome Browser</span>
                 </p>
             </div>
 
@@ -85,14 +82,15 @@ export default function QRScanner({ onScan, onClose }) {
                     background: linear-gradient(to right, #4f46e5, #6366f1) !important;
                     color: white !important;
                     border: none !important;
-                    padding: 10px 20px !important;
+                    padding: 12px 24px !important;
                     border-radius: 12px !important;
                     font-weight: 600 !important;
                     cursor: pointer !important;
                     margin: 10px 0 !important;
                     text-transform: uppercase !important;
                     letter-spacing: 1px !important;
-                    font-size: 12px !important;
+                    font-size: 11px !important;
+                    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4) !important;
                 }
                 #reader__dashboard_section_csr {
                     padding: 20px !important;
@@ -102,13 +100,14 @@ export default function QRScanner({ onScan, onClose }) {
                 }
                 #reader__status_span { display: none !important; }
                 #reader__camera_selection {
-                    background: #1e1e3f !important;
+                    background: #1a1a2e !important;
                     color: white !important;
                     border: 1px solid rgba(255,255,255,0.1) !important;
-                    border-radius: 8px !important;
-                    padding: 8px !important;
-                    margin-bottom: 10px !important;
+                    border-radius: 10px !important;
+                    padding: 10px !important;
+                    margin-bottom: 12px !important;
                     width: 100% !important;
+                    outline: none !important;
                 }
             `}} />
         </div>
