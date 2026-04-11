@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { X, Zap, ZapOff, Loader2, CameraOff, RefreshCw, AlertCircle } from 'lucide-react';
+import { X, Zap, ZapOff, Loader2, CameraOff, RefreshCw, AlertCircle, ImagePlus, Copy, ExternalLink } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function QRScanner({ onScan, onClose }) {
     const [isCameraReady, setIsCameraReady] = useState(false);
@@ -11,7 +12,9 @@ export default function QRScanner({ onScan, onClose }) {
     const [currentCameraIndex, setCurrentCameraIndex] = useState(0);
     const [showStartButton, setShowStartButton] = useState(false);
     const scannerRef = useRef(null);
+    const fileInputRef = useRef(null);
     const containerId = 'professional-reader';
+    const isGoogleApp = /GSA/i.test(navigator.userAgent);
 
     useEffect(() => {
         const html5QrCode = new Html5Qrcode(containerId);
@@ -141,6 +144,33 @@ export default function QRScanner({ onScan, onClose }) {
         }
     };
 
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            if (!scannerRef.current) {
+                scannerRef.current = new Html5Qrcode(containerId);
+            }
+            
+            // If already scanning, we should stop but html5-qrcode's scanFile 
+            // works independently if the container is initialized.
+            toast.loading('Scanning image...', { id: 'file-scan' });
+            
+            const decodedText = await scannerRef.current.scanFileV2(file, false);
+            toast.success('QR Code detected!', { id: 'file-scan' });
+            onScan(decodedText.decodedText);
+        } catch (err) {
+            console.error("File scan error:", err);
+            toast.error('Could not find a valid QR code in this image.', { id: 'file-scan' });
+        }
+    };
+
+    const copyUrl = () => {
+        navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copied! Now paste it in Chrome.');
+    };
+
     return (
         <div className="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-between animate-fade-in overflow-hidden">
             {/* Header */}
@@ -182,27 +212,45 @@ export default function QRScanner({ onScan, onClose }) {
                                 {error}
                             </p>
                         </div>
-                        <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-3 w-full">
+                            {isGoogleApp && (
+                                <div className="mb-2 p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl flex items-start gap-3 text-left">
+                                    <AlertCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                                    <p className="text-[10px] text-blue-300 leading-tight">
+                                        You are in the <b>Google Search App</b>. This app blocks camera access. 
+                                        Please click "Copy Link" and paste it into the <b>Chrome</b> app.
+                                    </p>
+                                </div>
+                            )}
+                            
                             <button 
                                 onClick={() => startScanner(currentCameraIndex)}
-                                className="btn-primary flex items-center justify-center gap-2 text-sm"
+                                className="btn-primary flex items-center justify-center gap-2 text-sm py-2.5"
                             >
                                 <RefreshCw className={`w-4 h-4 ${!error ? 'animate-spin' : ''}`} /> {error ? 'Try Again' : 'Reloading...'}
                             </button>
-                            {showStartButton && (
-                                <button 
-                                    onClick={() => startScanner(currentCameraIndex)}
-                                    className="btn-secondary text-sm"
-                                >
-                                    Force Start Camera
-                                </button>
-                            )}
+
                             <button 
-                                onClick={() => window.location.reload()}
-                                className="text-xs text-campus-muted underline mt-2"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="w-full bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl py-2.5 text-sm font-medium flex items-center justify-center gap-2 transition-all"
                             >
-                                Refresh Entire Page
+                                <ImagePlus className="w-4 h-4" /> Upload QR Photo
                             </button>
+                            
+                            <div className="grid grid-cols-2 gap-2 mt-2">
+                                <button 
+                                    onClick={copyUrl}
+                                    className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg py-2 text-[10px] flex items-center justify-center gap-1.5 transition-all"
+                                >
+                                    <Copy className="w-3 h-3" /> Copy Link
+                                </button>
+                                <button 
+                                    onClick={() => window.location.reload()}
+                                    className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg py-2 text-[10px] flex items-center justify-center gap-1.5 transition-all"
+                                >
+                                    <ExternalLink className="w-3 h-3" /> Refresh
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -253,8 +301,26 @@ export default function QRScanner({ onScan, onClose }) {
                             {isTorchOn ? <ZapOff className="w-6 h-6" /> : <Zap className="w-6 h-6" />}
                         </button>
                     )}
+
+                    <button 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="p-5 rounded-full bg-white/10 hover:bg-white/20 transition-all active:scale-90"
+                        title="Upload Photo"
+                    >
+                        <ImagePlus className="w-6 h-6" />
+                    </button>
                 </div>
             </div>
+
+            {/* Hidden File Input */}
+            <input 
+                type="file" 
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept="image/*"
+                className="hidden"
+                capture="environment" 
+            />
         </div>
     );
 }
