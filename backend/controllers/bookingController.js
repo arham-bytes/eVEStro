@@ -21,8 +21,13 @@ exports.createBooking = async (req, res, next) => {
             return res.status(400).json({ success: false, message: 'Event is not approved yet' });
         }
 
+        // Check event accessibility
+        if (!event.openForAll && req.user.college?.trim().toLowerCase() !== event.college?.trim().toLowerCase()) {
+            return res.status(403).json({ success: false, message: `This event is restricted to students of ${event.college}` });
+        }
+
         // Check available tickets
-        if (event.ticketsSold >= event.totalTickets) {
+        if (event.totalTickets && event.ticketsSold >= event.totalTickets) {
             return res.status(400).json({ success: false, message: 'Event is sold out' });
         }
 

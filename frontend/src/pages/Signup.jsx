@@ -24,6 +24,7 @@ export default function Signup() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!form.name || !form.email || !form.password) return toast.error('Please fill required fields');
+        if (form.role === 'student' && !form.college?.trim()) return toast.error('Please enter your college name');
         if (form.password !== form.confirmPassword) return toast.error('Passwords do not match');
         if (form.password.length < 6) return toast.error('Password must be at least 6 characters');
 
@@ -97,7 +98,7 @@ export default function Signup() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium mb-2">College Name</label>
+                            <label className="block text-sm font-medium mb-2">College Name {form.role === 'student' && '*'}</label>
                             <input type="text" value={form.college} onChange={(e) => setForm({ ...form, college: e.target.value })}
                                 className="input-field" placeholder="IIT Mumbai" />
                         </div>

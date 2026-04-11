@@ -12,7 +12,7 @@ export default function CreateEvent() {
     const [imagePreview, setImagePreview] = useState(null);
     const [form, setForm] = useState({
         title: '', description: '', category: 'Tech', college: '', venue: '',
-        date: '', time: '', price: 0, totalTickets: 100,
+        date: '', time: '', price: 0, totalTickets: '', openForAll: true,
     });
     const [imageFile, setImageFile] = useState(null);
 
@@ -102,7 +102,12 @@ export default function CreateEvent() {
                     <div>
                         <label className="block text-sm font-medium mb-2">College *</label>
                         <input type="text" value={form.college} onChange={(e) => setForm({ ...form, college: e.target.value })}
-                            className="input-field" placeholder="e.g. IIT Bombay" />
+                            className="input-field mb-2" placeholder="e.g. IIT Bombay" />
+                        <label className="flex items-center gap-2 text-sm text-campus-muted cursor-pointer">
+                            <input type="checkbox" checked={form.openForAll} onChange={(e) => setForm({ ...form, openForAll: e.target.checked })} 
+                                className="w-4 h-4 rounded border-campus-border text-primary-500 focus:ring-primary-500 bg-campus-dark" />
+                            Open for all colleges
+                        </label>
                     </div>
                 </div>
 
@@ -141,9 +146,9 @@ export default function CreateEvent() {
                         )}
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-2 flex items-center gap-2"><Users className="w-4 h-4 text-primary-400" /> Total Tickets *</label>
-                        <input type="number" min="1" value={form.totalTickets} onChange={(e) => setForm({ ...form, totalTickets: Number(e.target.value) })}
-                            className="input-field" placeholder="100" />
+                        <label className="block text-sm font-medium mb-2 flex items-center gap-2"><Users className="w-4 h-4 text-primary-400" /> Total Tickets</label>
+                        <input type="number" min="1" value={form.totalTickets} onChange={(e) => setForm({ ...form, totalTickets: e.target.value ? Number(e.target.value) : '' })}
+                            className="input-field" placeholder="Leave empty for unlimited" />
                     </div>
                 </div>
 

@@ -61,7 +61,6 @@ const eventSchema = new mongoose.Schema(
         },
         totalTickets: {
             type: Number,
-            required: true,
             min: 1,
         },
         ticketsSold: {
@@ -86,6 +85,10 @@ const eventSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        openForAll: {
+            type: Boolean,
+            default: true,
+        },
         coupons: [couponSchema],
         tags: [String],
         volunteers: [{
@@ -98,6 +101,7 @@ const eventSchema = new mongoose.Schema(
 
 // Virtual for available tickets
 eventSchema.virtual('availableTickets').get(function () {
+    if (!this.totalTickets) return null; // Or some large number, or just null to signify unlimited
     return this.totalTickets - this.ticketsSold;
 });
 
