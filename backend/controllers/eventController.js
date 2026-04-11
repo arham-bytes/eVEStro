@@ -10,7 +10,7 @@ exports.eventValidation = [
     body('venue').trim().notEmpty().withMessage('Venue is required'),
     body('date').notEmpty().withMessage('Date is required'),
     body('price').isNumeric().withMessage('Price must be a number'),
-    body('totalTickets').isInt({ min: 1 }).withMessage('Total tickets must be at least 1'),
+    body('totalTickets').optional({ checkFalsy: true }).isInt({ min: 1 }).withMessage('Total tickets must be at least 1'),
 ];
 
 // Platform markup percentage (10%)
