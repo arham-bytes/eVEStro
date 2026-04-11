@@ -9,6 +9,7 @@ export default function QRScanner({ onScan, onClose }) {
     const [error, setError] = useState(null);
     const [cameras, setCameras] = useState([]);
     const [currentCameraIndex, setCurrentCameraIndex] = useState(0);
+    const [showStartButton, setShowStartButton] = useState(false);
     const scannerRef = useRef(null);
     const containerId = 'professional-reader';
 
@@ -30,13 +31,20 @@ export default function QRScanner({ onScan, onClose }) {
                     scannerRef.current = new Html5Qrcode(containerId);
                 }
 
+                // Explicitly request permissions first (sometimes wakes up camera better)
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                    stream.getTracks().forEach(track => track.stop()); // Stop immediately, just needed permission
+                } catch (pErr) {
+                    console.warn("Permission check failed, proceeding anyway", pErr);
+                }
+
                 const devices = await Html5Qrcode.getCameras();
                 if (!devices || devices.length === 0) {
                     throw { name: 'NotFoundError' };
                 }
                 setCameras(devices);
 
-                // Try to find a back camera if picking automatically (index 0)
                 let cameraId = devices[cameraIndex].id;
                 if (cameraIndex === 0) {
                     const backCamera = devices.find(d => 
@@ -66,6 +74,7 @@ export default function QRScanner({ onScan, onClose }) {
                 );
 
                 setIsCameraReady(true);
+                setShowStartButton(false);
 
                 const track = scannerRef.current.getRunningTrack();
                 if (track && track.getCapabilities()?.torch) {
@@ -81,8 +90,11 @@ export default function QRScanner({ onScan, onClose }) {
                     userFriendlyError = 'No camera found on this device.';
                 } else if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
                     userFriendlyError = 'Camera requires a secure HTTPS connection.';
+                } else if (navigator.userAgent.match(/FBAN|FBAV|Instagram|LinkedIn|WhatsApp/i)) {
+                    userFriendlyError = 'You are using an In-App browser which blocks cameras. Please open this link in Chrome or Safari.';
                 } else {
-                    userFriendlyError = 'Error: ' + (err.message || 'Check if another app is using the camera or try opening in Chrome.');
+                    userFriendlyError = 'Browser blocked camera access. Try clicking "Start Camera" or Refresh.';
+                    setShowStartButton(true);
                 }
 
                 setError(userFriendlyError);
@@ -170,12 +182,28 @@ export default function QRScanner({ onScan, onClose }) {
                                 {error}
                             </p>
                         </div>
-                        <button 
-                            onClick={() => window.location.reload()}
-                            className="btn-primary flex items-center gap-2 text-sm"
-                        >
-                            <RefreshCw className="w-4 h-4" /> Refresh Page
-                        </button>
+                        <div className="flex flex-col gap-3">
+                            <button 
+                                onClick={() => startScanner(currentCameraIndex)}
+                                className="btn-primary flex items-center justify-center gap-2 text-sm"
+                            >
+                                <RefreshCw className={`w-4 h-4 ${!error ? 'animate-spin' : ''}`} /> {error ? 'Try Again' : 'Reloading...'}
+                            </button>
+                            {showStartButton && (
+                                <button 
+                                    onClick={() => startScanner(currentCameraIndex)}
+                                    className="btn-secondary text-sm"
+                                >
+                                    Force Start Camera
+                                </button>
+                            )}
+                            <button 
+                                onClick={() => window.location.reload()}
+                                className="text-xs text-campus-muted underline mt-2"
+                            >
+                                Refresh Entire Page
+                            </button>
+                        </div>
                     </div>
                 )}
 
