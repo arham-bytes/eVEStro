@@ -17,8 +17,9 @@ export default function EventCard({ event }) {
         featured,
     } = event;
 
-    const availableTickets = totalTickets - ticketsSold;
-    const soldPercentage = Math.round((ticketsSold / totalTickets) * 100);
+    const isUnlimited = !totalTickets;
+    const availableTickets = isUnlimited ? Infinity : (totalTickets - ticketsSold);
+    const soldPercentage = isUnlimited ? 0 : Math.round((ticketsSold / totalTickets) * 100);
 
     return (
         <Link to={`/events/${_id}`} className="glass-card-hover group block overflow-hidden">
@@ -58,7 +59,7 @@ export default function EventCard({ event }) {
                     </div>
                     <div className="flex items-center gap-2 text-campus-muted text-sm">
                         <Users className="w-4 h-4 text-primary-400" />
-                        <span>{availableTickets > 0 ? `${availableTickets} spots left` : 'Sold out'}</span>
+                        <span>{isUnlimited ? 'Unlimited spots' : (availableTickets > 0 ? `${availableTickets} spots left` : 'Sold out')}</span>
                     </div>
                 </div>
 

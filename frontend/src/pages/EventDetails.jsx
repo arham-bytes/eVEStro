@@ -111,8 +111,9 @@ export default function EventDetails() {
 
     if (!event) return null;
 
-    const available = event.totalTickets - event.ticketsSold;
-    const soldPercentage = Math.round((event.ticketsSold / event.totalTickets) * 100);
+    const isUnlimited = !event.totalTickets;
+    const available = isUnlimited ? Infinity : (event.totalTickets - event.ticketsSold);
+    const soldPercentage = isUnlimited ? 0 : Math.round((event.ticketsSold / event.totalTickets) * 100);
     const hasEnoughBalance = walletBalance >= event.price;
     const isOrganizer = isAuthenticated && user?._id === event.organizer?._id;
 
