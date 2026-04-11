@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, Loader2, Calendar, MapPin, Tag, DollarSign, Users, FileText } from 'lucide-react';
+import { Upload, Loader2, Calendar, MapPin, Tag, DollarSign, Users, FileText, Building2 } from 'lucide-react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
-import collegeList from '../colleges.json';
+import CollegeAutocomplete from '../components/CollegeAutocomplete';
 
 const CATEGORIES = ['Tech', 'Fest', 'Music', 'Sports', 'Workshop', 'Seminar', 'Other'];
 
@@ -101,19 +101,15 @@ export default function CreateEvent() {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-2">College *</label>
-                        <input 
-                            type="text" 
-                            list="event-college-list"
-                            value={form.college} 
-                            onChange={(e) => setForm({ ...form, college: e.target.value })}
-                            className="input-field mb-2" 
-                            placeholder="e.g. Search your college" 
+                        <label className="block text-sm font-medium text-campus-muted mb-2 flex items-center gap-2">
+                            <Building2 className="w-4 h-4" /> College Name
+                        </label>
+                        <CollegeAutocomplete 
+                            value={form.college}
+                            onChange={(val) => setForm({ ...form, college: val })}
+                            placeholder="Search your college (e.g. LPU, IIT...)"
                         />
-                        <datalist id="event-college-list">
-                            {collegeList.map((c, i) => <option key={i} value={c} />)}
-                        </datalist>
-                        <label className="flex items-center gap-2 text-sm text-campus-muted cursor-pointer">
+                        <label className="flex items-center gap-2 text-sm text-campus-muted cursor-pointer mt-2">
                             <input type="checkbox" checked={form.openForAll} onChange={(e) => setForm({ ...form, openForAll: e.target.checked })} 
                                 className="w-4 h-4 rounded border-campus-border text-primary-500 focus:ring-primary-500 bg-campus-dark" />
                             Open for all colleges

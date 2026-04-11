@@ -11,6 +11,7 @@ const {
     eventValidation,
     addVolunteer,
     getVolunteerEvents,
+    getColleges,
 } = require('../controllers/eventController');
 const { protect, authorize } = require('../middleware/auth');
 const { upload } = require('../config/cloudinary');
@@ -19,6 +20,7 @@ const { upload } = require('../config/cloudinary');
 router.get('/', getEvents);
 router.get('/my/events', protect, authorize('organizer', 'admin'), getMyEvents);
 router.get('/volunteer/events', protect, getVolunteerEvents);
+router.get('/colleges/list', getColleges);
 router.get('/:id', getEvent);
 
 // Protected routes (organizer/admin)

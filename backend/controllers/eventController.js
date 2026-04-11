@@ -1,6 +1,7 @@
 const Event = require('../models/Event');
 const User = require('../models/User');
 const { validationResult, body } = require('express-validator');
+const INDIA_UNIVERSITIES = require('../data/india_universities');
 
 exports.eventValidation = [
     body('title').trim().notEmpty().withMessage('Title is required'),
@@ -16,6 +17,26 @@ exports.eventValidation = [
 // Platform markup percentage (10%)
 const PLATFORM_MARKUP = 0.10;
 
+// Helper to expand college search with aliases
+const expandCollegeSearch = (term) => {
+    if (!term) return '';
+    const termLower = term.toLowerCase().trim();
+    
+    // Find matching university/alias
+    const match = INDIA_UNIVERSITIES.find(u => 
+        u.name.toLowerCase().includes(termLower) || 
+        u.aliases.some(a => a.toLowerCase() === termLower)
+    );
+
+    if (match) {
+        // Create an OR regex for the input, the full name, and all aliases
+        const terms = new Set([term, match.name, ...match.aliases]);
+        return Array.from(terms).map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+    }
+    
+    return term;
+};
+
 // @desc    Get all approved events (public)
 // @route   GET /api/events
 exports.getEvents = async (req, res, next) => {
@@ -25,12 +46,18 @@ exports.getEvents = async (req, res, next) => {
         const query = { status: 'approved' };
 
         if (category) query.category = category;
-        if (college) query.college = { $regex: college, $options: 'i' };
+        
+        if (college) {
+            const expandedCollege = expandCollegeSearch(college);
+            query.college = { $regex: expandedCollege, $options: 'i' };
+        }
+
         if (search) {
+            const expandedSearch = expandCollegeSearch(search);
             query.$or = [
                 { title: { $regex: search, $options: 'i' } },
                 { description: { $regex: search, $options: 'i' } },
-                { college: { $regex: search, $options: 'i' } },
+                { college: { $regex: expandedSearch || search, $options: 'i' } },
             ];
         }
         if (startDate || endDate) {
@@ -254,6 +281,16 @@ exports.getVolunteerEvents = async (req, res, next) => {
             .populate('organizer', 'name college');
 
         res.json({ success: true, data: events });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Get all supported colleges/universities
+// @route   GET /api/events/colleges
+exports.getColleges = async (req, res, next) => {
+    try {
+        res.json({ success: true, data: INDIA_UNIVERSITIES });
     } catch (error) {
         next(error);
     }

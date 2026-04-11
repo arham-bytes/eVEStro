@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, Ticket, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import collegeList from '../colleges.json';
+import CollegeAutocomplete from '../components/CollegeAutocomplete';
 
 export default function Signup() {
     const [form, setForm] = useState({
@@ -100,17 +100,11 @@ export default function Signup() {
 
                         <div>
                             <label className="block text-sm font-medium mb-2">College Name {form.role === 'student' && '*'}</label>
-                            <input 
-                                type="text" 
-                                list="college-list"
-                                value={form.college} 
-                                onChange={(e) => setForm({ ...form, college: e.target.value })}
-                                className="input-field" 
-                                placeholder="Search or type college name" 
+                            <CollegeAutocomplete 
+                                value={form.college}
+                                onChange={(val) => setForm({ ...form, college: val })}
+                                placeholder="Search or type college name (e.g. LPU, IIT...)"
                             />
-                            <datalist id="college-list">
-                                {collegeList.map((c, i) => <option key={i} value={c} />)}
-                            </datalist>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

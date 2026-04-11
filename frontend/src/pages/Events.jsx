@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Search, Filter, Calendar, X, Loader2 } from 'lucide-react';
 import api from '../api/axios';
 import EventCard from '../components/EventCard';
+import CollegeAutocomplete from '../components/CollegeAutocomplete';
 
 const CATEGORIES = ['All', 'Tech', 'Fest', 'Music', 'Sports', 'Workshop', 'Seminar', 'Other'];
 
@@ -83,13 +84,13 @@ export default function Events() {
                     </div>
 
                     {/* College filter */}
-                    <input
-                        type="text"
-                        value={filters.college}
-                        onChange={(e) => setFilters({ ...filters, college: e.target.value })}
-                        className="input-field lg:w-48"
-                        placeholder="College name"
-                    />
+                    <div className="lg:w-72">
+                        <CollegeAutocomplete 
+                            value={filters.college}
+                            onChange={(val) => setFilters({ ...filters, college: val })}
+                            placeholder="All Colleges"
+                        />
+                    </div>
 
                     {/* Date filter */}
                     <input
