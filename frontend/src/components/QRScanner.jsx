@@ -6,7 +6,12 @@ export default function QRScanner({ onScan, onClose }) {
     const scannerRef = useRef(null);
     const SCANNER_ID = 'reader';
 
+    const isRendering = useRef(false);
+
     useEffect(() => {
+        if (isRendering.current) return;
+        isRendering.current = true;
+
         // Initialize scanner using the reliable high-level scanner
         const scanner = new Html5QrcodeScanner(
             SCANNER_ID,
@@ -15,9 +20,8 @@ export default function QRScanner({ onScan, onClose }) {
                 qrbox: { width: 250, height: 250 },
                 aspectRatio: 1.0,
                 showTorchButtonIfSupported: true,
-                // These help in cross-browser compatibility
                 rememberLastUsedCamera: true,
-                supportedScanTypes: [0, 1] // Camera and File
+                supportedScanTypes: [0, 1] 
             },
             /* verbose= */ false
         );
@@ -27,17 +31,19 @@ export default function QRScanner({ onScan, onClose }) {
                 onScan(decodedText);
                 scanner.clear().catch(err => console.error("Scanner clear error:", err));
             },
-            (error) => {
-                // Ignore frame errors
-            }
+            (error) => {}
         );
 
         scannerRef.current = scanner;
 
-        // Cleanup
         return () => {
             if (scannerRef.current) {
-                scannerRef.current.clear().catch(err => console.error("Cleanup error:", err));
+                scannerRef.current.clear().then(() => {
+                    isRendering.current = false;
+                }).catch(err => {
+                    console.error("Cleanup error:", err);
+                    isRendering.current = false;
+                });
             }
         };
     }, []);
