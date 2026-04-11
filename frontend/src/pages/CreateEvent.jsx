@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Upload, Loader2, Calendar, MapPin, Tag, DollarSign, Users, FileText } from 'lucide-react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import collegeList from '../colleges.json';
 
 const CATEGORIES = ['Tech', 'Fest', 'Music', 'Sports', 'Workshop', 'Seminar', 'Other'];
 
@@ -101,8 +102,17 @@ export default function CreateEvent() {
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-2">College *</label>
-                        <input type="text" value={form.college} onChange={(e) => setForm({ ...form, college: e.target.value })}
-                            className="input-field mb-2" placeholder="e.g. IIT Bombay" />
+                        <input 
+                            type="text" 
+                            list="event-college-list"
+                            value={form.college} 
+                            onChange={(e) => setForm({ ...form, college: e.target.value })}
+                            className="input-field mb-2" 
+                            placeholder="e.g. Search your college" 
+                        />
+                        <datalist id="event-college-list">
+                            {collegeList.map((c, i) => <option key={i} value={c} />)}
+                        </datalist>
                         <label className="flex items-center gap-2 text-sm text-campus-muted cursor-pointer">
                             <input type="checkbox" checked={form.openForAll} onChange={(e) => setForm({ ...form, openForAll: e.target.checked })} 
                                 className="w-4 h-4 rounded border-campus-border text-primary-500 focus:ring-primary-500 bg-campus-dark" />
