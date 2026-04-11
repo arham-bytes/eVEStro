@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, BarChart3, Users, Ticket, DollarSign, Calendar, Eye, QrCode, Loader2, CheckCircle, XCircle, Clock, X, Shield } from 'lucide-react';
+import { Plus, BarChart3, Users, Ticket, DollarSign, Calendar, Eye, QrCode, Loader2, CheckCircle, XCircle, Clock, X, Shield, Camera } from 'lucide-react';
 import { formatDate, formatPrice, getCategoryBadgeClass } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import QRScanner from '../components/QRScanner';
 
 export default function OrganizerDashboard() {
     const { user } = useAuth();
@@ -15,6 +16,7 @@ export default function OrganizerDashboard() {
     const [bookingsLoading, setBookingsLoading] = useState(false);
     const [scanTicketId, setScanTicketId] = useState('');
     const [scanResult, setScanResult] = useState(null);
+    const [isScannerOpen, setIsScannerOpen] = useState(false);
     
     // Volunteers
     const [selectedVolunteerEvent, setSelectedVolunteerEvent] = useState(null);
@@ -48,10 +50,12 @@ export default function OrganizerDashboard() {
         }
     };
 
-    const handleVerifyTicket = async () => {
-        if (!scanTicketId.trim()) return;
+    const handleVerifyTicket = async (ticketIdToVerify = null) => {
+        const id = ticketIdToVerify || scanTicketId;
+        if (!id.trim()) return;
+        
         try {
-            const { data } = await api.post(`/bookings/verify/${scanTicketId}`);
+            const { data } = await api.post(`/bookings/verify/${id}`);
             setScanResult({ success: true, message: data.message, data: data.data });
             toast.success('Ticket verified! ✅');
             setScanTicketId('');
@@ -59,6 +63,17 @@ export default function OrganizerDashboard() {
             setScanResult({ success: false, message: error.response?.data?.message || 'Verification failed' });
             toast.error(error.response?.data?.message || 'Verification failed');
         }
+    };
+
+    const handleScanSuccess = (decodedText) => {
+        setIsScannerOpen(false);
+        // Sometimes the decoded text is the full URL, we want to extract the Ticket ID
+        let ticketId = decodedText;
+        if (decodedText.includes('/verify/')) {
+            ticketId = decodedText.split('/verify/')[1];
+        }
+        setScanTicketId(ticketId);
+        handleVerifyTicket(ticketId);
     };
 
     const handleAddVolunteer = async () => {
@@ -120,10 +135,19 @@ export default function OrganizerDashboard() {
             <div className="glass-card p-6 mb-8">
                 <h2 className="text-lg font-semibold mb-4 flex items-center gap-2"><QrCode className="w-5 h-5 text-primary-400" /> Check-in Scanner</h2>
                 <div className="flex gap-2">
-                    <input type="text" value={scanTicketId} onChange={(e) => setScanTicketId(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleVerifyTicket()}
-                        className="input-field flex-1" placeholder="Enter or scan Ticket ID (e.g. CP-XXXXXXXXXXXX)" />
-                    <button onClick={handleVerifyTicket} className="btn-primary">Verify</button>
+                    <div className="relative flex-1">
+                        <input type="text" value={scanTicketId} onChange={(e) => setScanTicketId(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleVerifyTicket()}
+                            className="input-field w-full pl-10" placeholder="Enter or scan Ticket ID (e.g. CP-XXXXXXXXXXXX)" />
+                        <button 
+                            onClick={() => setIsScannerOpen(true)}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 hover:text-primary-300 transition-colors"
+                            title="Scan QR Code"
+                        >
+                            <Camera className="w-5 h-5" />
+                        </button>
+                    </div>
+                    <button onClick={() => handleVerifyTicket()} className="btn-primary">Verify</button>
                 </div>
                 {scanResult && (
                     <div className={`mt-3 p-3 rounded-xl text-sm ${scanResult.success ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
@@ -258,6 +282,13 @@ export default function OrganizerDashboard() {
                         </div>
                     </div>
                 </div>
+            )}
+            {/* QR Scanner Modal */}
+            {isScannerOpen && (
+                <QRScanner 
+                    onScan={handleScanSuccess} 
+                    onClose={() => setIsScannerOpen(false)} 
+                />
             )}
         </div>
     );
