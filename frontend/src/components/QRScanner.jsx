@@ -7,6 +7,8 @@ export default function QRScanner({ onScan, onClose }) {
     const [isTorchOn, setIsTorchOn] = useState(false);
     const [hasTorch, setHasTorch] = useState(false);
     const [error, setError] = useState(null);
+    const [cameras, setCameras] = useState([]);
+    const [currentCameraIndex, setCurrentCameraIndex] = useState(0);
     const scannerRef = useRef(null);
     const containerId = 'professional-reader';
 
@@ -14,32 +16,53 @@ export default function QRScanner({ onScan, onClose }) {
         const html5QrCode = new Html5Qrcode(containerId);
         scannerRef.current = html5QrCode;
 
-        const startScanner = async () => {
+        const startScanner = async (cameraIndex = 0) => {
             setError(null);
             setIsCameraReady(false);
             
             try {
-                const config = { 
-                    fps: 15, 
-                    qrbox: { width: 250, height: 250 },
-                };
-
-                // Add a small delay for smoother initialization on Android
-                await new Promise(resolve => setTimeout(resolve, 500));
+                // Ensure existing scanner is stopped before starting new one
+                if (scannerRef.current && scannerRef.current.isScanning) {
+                    await scannerRef.current.stop();
+                }
 
                 if (!scannerRef.current) {
                     scannerRef.current = new Html5Qrcode(containerId);
                 }
 
+                const devices = await Html5Qrcode.getCameras();
+                if (!devices || devices.length === 0) {
+                    throw { name: 'NotFoundError' };
+                }
+                setCameras(devices);
+
+                // Try to find a back camera if picking automatically (index 0)
+                let cameraId = devices[cameraIndex].id;
+                if (cameraIndex === 0) {
+                    const backCamera = devices.find(d => 
+                        d.label.toLowerCase().includes('back') || 
+                        d.label.toLowerCase().includes('environment') || 
+                        d.label.toLowerCase().includes('rear')
+                    );
+                    if (backCamera) {
+                        cameraId = backCamera.id;
+                        setCurrentCameraIndex(devices.indexOf(backCamera));
+                    }
+                }
+
+                const config = { 
+                    fps: 15, 
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0
+                };
+
                 await scannerRef.current.start(
-                    { facingMode: "environment" }, // Using ideal strategy implicitly
+                    cameraId,
                     config,
                     (decodedText) => {
                         onScan(decodedText);
                     },
-                    (errorMessage) => {
-                        // Silent frame scanning errors
-                    }
+                    (errorMessage) => {}
                 );
 
                 setIsCameraReady(true);
@@ -52,12 +75,14 @@ export default function QRScanner({ onScan, onClose }) {
                 console.error("Camera start error:", err);
                 let userFriendlyError = 'Could not access camera.';
                 
-                if (err?.name === 'NotAllowedError') {
-                    userFriendlyError = 'Please allow camera permissions to scan tickets.';
+                if (err?.name === 'NotAllowedError' || err === 'NotAllowedError') {
+                    userFriendlyError = 'Camera permission denied. Please allow camera access in your browser settings.';
                 } else if (err?.name === 'NotFoundError') {
-                    userFriendlyError = 'No back camera found on this device.';
+                    userFriendlyError = 'No camera found on this device.';
                 } else if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
                     userFriendlyError = 'Camera requires a secure HTTPS connection.';
+                } else {
+                    userFriendlyError = 'Error: ' + (err.message || 'Check if another app is using the camera or try opening in Chrome.');
                 }
 
                 setError(userFriendlyError);
@@ -81,6 +106,13 @@ export default function QRScanner({ onScan, onClose }) {
             stopScanner();
         };
     }, []);
+
+    const switchCamera = () => {
+        if (cameras.length < 2) return;
+        const nextIndex = (currentCameraIndex + 1) % cameras.length;
+        setCurrentCameraIndex(nextIndex);
+        startScanner(nextIndex);
+    };
 
     const toggleTorch = async () => {
         if (!scannerRef.current) return;
@@ -174,14 +206,26 @@ export default function QRScanner({ onScan, onClose }) {
                     Place the ticket QR code inside the frame to scan automatically
                 </p>
                 
-                {hasTorch && (
-                    <button 
-                        onClick={toggleTorch}
-                        className={`p-5 rounded-full transition-all duration-300 ${isTorchOn ? 'bg-primary-500 shadow-lg shadow-primary-500/40' : 'bg-white/10'}`}
-                    >
-                        {isTorchOn ? <ZapOff className="w-6 h-6" /> : <Zap className="w-6 h-6" />}
-                    </button>
-                )}
+                <div className="flex items-center gap-6">
+                    {cameras.length > 1 && (
+                        <button 
+                            onClick={switchCamera}
+                            className="p-5 rounded-full bg-white/10 hover:bg-white/20 transition-all active:scale-90"
+                            title="Switch Camera"
+                        >
+                            <RefreshCw className="w-6 h-6" />
+                        </button>
+                    )}
+
+                    {hasTorch && (
+                        <button 
+                            onClick={toggleTorch}
+                            className={`p-5 rounded-full transition-all duration-300 ${isTorchOn ? 'bg-primary-500 shadow-lg shadow-primary-500/40' : 'bg-white/10'}`}
+                        >
+                            {isTorchOn ? <ZapOff className="w-6 h-6" /> : <Zap className="w-6 h-6" />}
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );
