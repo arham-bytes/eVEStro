@@ -56,12 +56,8 @@ exports.createBooking = async (req, res, next) => {
         // For free events, book directly
         if (totalAmount === 0) {
             const ticketId = `CP-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
-            const qrCode = await generateQR({
-                ticketId,
-                eventId: event._id,
-                eventTitle: event.title,
-                userName: req.user.name,
-            });
+            const scanUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/verify/${ticketId}`;
+            const qrCode = await generateQR(scanUrl);
 
             const booking = await Booking.create({
                 event: eventId,
@@ -127,12 +123,8 @@ exports.createBooking = async (req, res, next) => {
 
             // Create booking
             const ticketId = `CP-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
-            const qrCode = await generateQR({
-                ticketId,
-                eventId: event._id,
-                eventTitle: event.title,
-                userName: req.user.name,
-            });
+            const scanUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/verify/${ticketId}`;
+            const qrCode = await generateQR(scanUrl);
 
             const booking = await Booking.create({
                 event: eventId,

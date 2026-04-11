@@ -12,6 +12,7 @@ import OrganizerDashboard from './pages/OrganizerDashboard';
 import CreateEvent from './pages/CreateEvent';
 import AdminDashboard from './pages/AdminDashboard';
 import Wallet from './pages/Wallet';
+import VerifyTicket from './pages/VerifyTicket';
 
 export default function App() {
     return (
@@ -44,6 +45,7 @@ export default function App() {
                         path="/wallet"
                         element={<ProtectedRoute roles={['student', 'organizer', 'admin']}><Wallet /></ProtectedRoute>}
                     />
+                    <Route path="/verify/:ticketId" element={<VerifyTicket />} />
                 </Routes>
             </main>
             <Footer />
