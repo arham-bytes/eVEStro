@@ -114,6 +114,7 @@ export default function EventDetails() {
     const available = event.totalTickets - event.ticketsSold;
     const soldPercentage = Math.round((event.ticketsSold / event.totalTickets) * 100);
     const hasEnoughBalance = walletBalance >= event.price;
+    const isOrganizer = isAuthenticated && user?._id === event.organizer?._id;
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -183,17 +184,26 @@ export default function EventDetails() {
                         </div>
 
                         {/* Availability */}
-                        <div>
-                            <div className="flex justify-between text-sm mb-2">
-                                <span className="text-campus-muted">Availability</span>
-                                <span>{available > 0 ? `${available} left` : 'Sold out'}</span>
+                        {isOrganizer ? (
+                            <div>
+                                <div className="flex justify-between text-sm mb-2">
+                                    <span className="text-campus-muted">Availability (Organizer View)</span>
+                                    <span>{available > 0 ? `${available} left` : 'Sold out'}</span>
+                                </div>
+                                <div className="h-2 bg-campus-dark rounded-full overflow-hidden">
+                                    <div className={`h-full rounded-full ${soldPercentage > 80 ? 'bg-red-500' : 'bg-primary-500'}`}
+                                        style={{ width: `${soldPercentage}%` }} />
+                                </div>
+                                <p className="text-xs text-campus-muted mt-1">{event.ticketsSold} / {event.totalTickets} sold</p>
                             </div>
-                            <div className="h-2 bg-campus-dark rounded-full overflow-hidden">
-                                <div className={`h-full rounded-full ${soldPercentage > 80 ? 'bg-red-500' : 'bg-primary-500'}`}
-                                    style={{ width: `${soldPercentage}%` }} />
+                        ) : (
+                            <div className="flex justify-between text-base mb-2 p-3 bg-campus-dark/50 rounded-xl border border-campus-border/30">
+                                <span className="text-campus-muted">Status</span>
+                                <span className={`font-semibold ${available > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                    {available > 0 ? 'Tickets Available' : 'Sold Out'}
+                                </span>
                             </div>
-                            <p className="text-xs text-campus-muted mt-1">{event.ticketsSold} / {event.totalTickets} sold</p>
-                        </div>
+                        )}
 
                         {/* Info */}
                         <div className="space-y-3 text-sm">
@@ -205,10 +215,12 @@ export default function EventDetails() {
                                 <MapPin className="w-4 h-4 text-primary-400" />
                                 <span>{event.venue}, {event.college}</span>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <Users className="w-4 h-4 text-primary-400" />
-                                <span>{event.totalTickets} total capacity</span>
-                            </div>
+                            {isOrganizer && event.totalTickets && (
+                                <div className="flex items-center gap-3">
+                                    <Users className="w-4 h-4 text-primary-400" />
+                                    <span>{event.totalTickets} total capacity</span>
+                                </div>
+                            )}
                         </div>
 
                         {/* Coupon */}
