@@ -141,7 +141,7 @@ export default function EventDetails() {
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             {/* Back */}
-            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-campus-muted hover:text-white mb-6 transition-colors">
+            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-eVEStro-muted hover:text-white mb-6 transition-colors">
                 <ArrowLeft className="w-4 h-4" /> Back
             </button>
 
@@ -157,7 +157,7 @@ export default function EventDetails() {
                                 <Tag className="w-20 h-20 text-primary-400/40" />
                             </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-campus-darker via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-eVEStro-darker via-transparent to-transparent" />
                         <div className="absolute bottom-4 left-4 flex gap-2">
                             <span className={`badge ${getCategoryBadgeClass(event.category)} backdrop-blur-sm`}>{event.category}</span>
                             {event.featured && <span className="badge bg-yellow-500/20 text-yellow-400">⭐ Featured</span>}
@@ -167,7 +167,7 @@ export default function EventDetails() {
                     {/* Title & Meta */}
                     <div>
                         <h1 className="text-3xl md:text-4xl font-bold font-display mb-4">{event.title}</h1>
-                        <div className="flex flex-wrap gap-4 text-campus-muted">
+                        <div className="flex flex-wrap gap-4 text-eVEStro-muted">
                             <span className="flex items-center gap-2"><Calendar className="w-4 h-4 text-primary-400" /> {formatDate(event.date)}</span>
                             {event.time && <span className="flex items-center gap-2"><Clock className="w-4 h-4 text-primary-400" /> {event.time}</span>}
                             <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-primary-400" /> {event.venue}</span>
@@ -177,7 +177,7 @@ export default function EventDetails() {
                     {/* Description */}
                     <div className="glass-card p-6">
                         <h2 className="text-xl font-semibold mb-4">About this event</h2>
-                        <div className="text-campus-muted whitespace-pre-line leading-relaxed">{event.description}</div>
+                        <div className="text-eVEStro-muted whitespace-pre-line leading-relaxed">{event.description}</div>
                     </div>
 
                     {/* Organizer */}
@@ -189,7 +189,7 @@ export default function EventDetails() {
                             </div>
                             <div>
                                 <p className="font-semibold">{event.organizer?.name}</p>
-                                <p className="text-sm text-campus-muted">{event.organizer?.college || event.college}</p>
+                                <p className="text-sm text-eVEStro-muted">{event.organizer?.college || event.college}</p>
                             </div>
                         </div>
                     </div>
@@ -202,7 +202,7 @@ export default function EventDetails() {
                             <p className={`text-4xl font-bold ${event.price === 0 ? 'text-green-400' : 'gradient-text'}`}>
                                 {formatPrice(event.price)}
                             </p>
-                            <p className="text-sm text-campus-muted mt-1">per ticket</p>
+                            <p className="text-sm text-eVEStro-muted mt-1">per ticket</p>
                         </div>
 
                         {/* Registration Status */}
@@ -216,18 +216,18 @@ export default function EventDetails() {
                         ) : isOrganizer ? (
                             <div>
                                 <div className="flex justify-between text-sm mb-2">
-                                    <span className="text-campus-muted">Availability (Organizer View)</span>
+                                    <span className="text-eVEStro-muted">Availability (Organizer View)</span>
                                     <span>{available > 0 ? `${available} left` : 'Sold out'}</span>
                                 </div>
-                                <div className="h-2 bg-campus-dark rounded-full overflow-hidden">
+                                <div className="h-2 bg-eVEStro-dark rounded-full overflow-hidden">
                                     <div className={`h-full rounded-full ${soldPercentage > 80 ? 'bg-red-500' : 'bg-primary-500'}`}
                                         style={{ width: `${soldPercentage}%` }} />
                                 </div>
-                                <p className="text-xs text-campus-muted mt-1">{event.ticketsSold} / {event.totalTickets} sold</p>
+                                <p className="text-xs text-eVEStro-muted mt-1">{event.ticketsSold} / {event.totalTickets} sold</p>
                             </div>
                         ) : (
-                            <div className="flex justify-between text-base mb-2 p-3 bg-campus-dark/50 rounded-xl border border-campus-border/30">
-                                <span className="text-campus-muted">Status</span>
+                            <div className="flex justify-between text-base mb-2 p-3 bg-eVEStro-dark/50 rounded-xl border border-eVEStro-border/30">
+                                <span className="text-eVEStro-muted">Status</span>
                                 <span className={`font-semibold ${available > 0 ? 'text-green-400' : 'text-red-400'}`}>
                                     {available > 0 ? 'Tickets Available' : 'Sold Out'}
                                 </span>
@@ -241,7 +241,7 @@ export default function EventDetails() {
                                 <div className="space-y-2">
                                     <button 
                                         onClick={() => setSelectedTierId('')}
-                                        className={`w-full p-3 rounded-xl border text-left transition-all ${!selectedTierId ? 'border-primary-500 bg-primary-500/10' : 'border-campus-border hover:border-campus-border/60'}`}
+                                        className={`w-full p-3 rounded-xl border text-left transition-all ${!selectedTierId ? 'border-primary-500 bg-primary-500/10' : 'border-eVEStro-border hover:border-eVEStro-border/60'}`}
                                     >
                                         <div className="flex justify-between items-center">
                                             <span className="font-semibold">Standard Entry</span>
@@ -252,13 +252,13 @@ export default function EventDetails() {
                                         <button 
                                             key={tier._id}
                                             onClick={() => setSelectedTierId(tier._id)}
-                                            className={`w-full p-3 rounded-xl border text-left transition-all ${selectedTierId === tier._id ? 'border-primary-500 bg-primary-500/10' : 'border-campus-border hover:border-campus-border/60'}`}
+                                            className={`w-full p-3 rounded-xl border text-left transition-all ${selectedTierId === tier._id ? 'border-primary-500 bg-primary-500/10' : 'border-eVEStro-border hover:border-eVEStro-border/60'}`}
                                         >
                                             <div className="flex justify-between items-center mb-1">
                                                 <span className="font-semibold">{tier.name}</span>
                                                 <span className="text-primary-400 font-bold">{formatPrice(tier.price)}</span>
                                             </div>
-                                            <p className="text-[10px] text-campus-muted">{tier.description || `Includes ${tier.quantity} tickets`}</p>
+                                            <p className="text-[10px] text-eVEStro-muted">{tier.description || `Includes ${tier.quantity} tickets`}</p>
                                         </button>
                                     ))}
                                 </div>
@@ -299,10 +299,10 @@ export default function EventDetails() {
 
                         {/* Wallet Balance (for logged-in users with paid events) */}
                         {isAuthenticated && currentPrice > 0 && (
-                            <div className="flex items-center justify-between p-3 rounded-xl bg-campus-dark/50 border border-campus-border/30">
+                            <div className="flex items-center justify-between p-3 rounded-xl bg-eVEStro-dark/50 border border-eVEStro-border/30">
                                 <div className="flex items-center gap-2">
                                     <Wallet className="w-4 h-4 text-yellow-400" />
-                                    <span className="text-sm text-campus-muted">Wallet Balance</span>
+                                    <span className="text-sm text-eVEStro-muted">Wallet Balance</span>
                                 </div>
                                 <span className={`text-sm font-semibold ${hasEnoughBalance ? 'text-green-400' : 'text-red-400'}`}>
                                     ₹{walletBalance.toLocaleString('en-IN')}
@@ -328,12 +328,12 @@ export default function EventDetails() {
                             disabled={booking || available <= 0 || isRegistrationEnded}
                             className={`w-full flex items-center justify-center gap-2 text-lg py-3 px-6 rounded-xl font-semibold transition-all duration-200 ${
                                 isRegistrationEnded
-                                    ? 'bg-campus-dark border border-campus-border text-campus-muted cursor-not-allowed opacity-60'
+                                    ? 'bg-eVEStro-dark border border-eVEStro-border text-eVEStro-muted cursor-not-allowed opacity-60'
                                     : currentPrice === 0
                                         ? 'btn-primary'
                                         : hasEnoughBalance
                                             ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 text-yellow-400 hover:border-yellow-400/60 hover:shadow-lg hover:shadow-yellow-500/10'
-                                            : 'bg-campus-dark border border-campus-border text-campus-muted cursor-not-allowed opacity-60'
+                                            : 'bg-eVEStro-dark border border-eVEStro-border text-eVEStro-muted cursor-not-allowed opacity-60'
                             }`}
                         >
                             {booking ? (
@@ -383,11 +383,11 @@ export default function EventDetails() {
             {showShareQR && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowShareQR(false)}>
                     <div className="glass-card p-8 max-w-sm w-full text-center animate-slide-up relative" onClick={(e) => e.stopPropagation()}>
-                        <button onClick={() => setShowShareQR(false)} className="absolute top-4 right-4 text-campus-muted hover:text-white transition-colors">
+                        <button onClick={() => setShowShareQR(false)} className="absolute top-4 right-4 text-eVEStro-muted hover:text-white transition-colors">
                             <X className="w-5 h-5" />
                         </button>
                         <h3 className="text-xl font-semibold mb-2">Share this Event</h3>
-                        <p className="text-sm text-campus-muted mb-6">Let your friends scan this QR code to view the event online.</p>
+                        <p className="text-sm text-eVEStro-muted mb-6">Let your friends scan this QR code to view the event online.</p>
                         <div className="bg-white rounded-2xl p-4 inline-block mb-6">
                             <QRCodeCanvas
                                 id="share-qr-code"

@@ -100,7 +100,7 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div className="mb-8">
                 <h1 className="section-heading mb-2">Admin <span className="gradient-text">Panel</span></h1>
-                <p className="text-campus-muted">Manage the entire Evestro platform.</p>
+                <p className="text-eVEStro-muted">Manage the entire eVEStro platform.</p>
             </div>
 
             {/* Tabs */}
@@ -109,7 +109,7 @@ export default function AdminDashboard() {
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium whitespace-nowrap transition-all border ${activeTab === tab.id
                                 ? 'bg-primary-500/20 border-primary-500 text-primary-400'
-                                : 'bg-campus-card border-campus-border text-campus-muted hover:border-campus-muted'
+                                : 'bg-eVEStro-card border-eVEStro-border text-eVEStro-muted hover:border-eVEStro-muted'
                             }`}>
                         <tab.icon className="w-4 h-4" /> {tab.label}
                     </button>
@@ -131,7 +131,7 @@ export default function AdminDashboard() {
                             <div key={stat.label} className="glass-card p-6 text-center">
                                 <stat.icon className={`w-8 h-8 ${stat.color} mx-auto mb-2`} />
                                 <p className="text-2xl font-bold">{stat.value}</p>
-                                <p className="text-sm text-campus-muted">{stat.label}</p>
+                                <p className="text-sm text-eVEStro-muted">{stat.label}</p>
                             </div>
                         ))}
                     </div>
@@ -148,7 +148,7 @@ export default function AdminDashboard() {
                                             <span className={`badge ${getCategoryBadgeClass(cat._id)}`}>{cat._id}</span>
                                         </div>
                                         <div className="flex items-center gap-3 flex-1 ml-4">
-                                            <div className="flex-1 h-2 bg-campus-dark rounded-full overflow-hidden">
+                                            <div className="flex-1 h-2 bg-eVEStro-dark rounded-full overflow-hidden">
                                                 <div className="h-full bg-primary-500 rounded-full" style={{ width: `${(cat.count / dashboard.totalEvents) * 100}%` }} />
                                             </div>
                                             <span className="text-sm font-medium w-8 text-right">{cat.count}</span>
@@ -164,8 +164,8 @@ export default function AdminDashboard() {
                             <div className="space-y-3">
                                 {(dashboard.monthlyRevenue || []).map((m) => (
                                     <div key={m._id} className="flex items-center justify-between">
-                                        <span className="text-sm text-campus-muted w-20">{m._id}</span>
-                                        <div className="flex-1 mx-4 h-2 bg-campus-dark rounded-full overflow-hidden">
+                                        <span className="text-sm text-eVEStro-muted w-20">{m._id}</span>
+                                        <div className="flex-1 mx-4 h-2 bg-eVEStro-dark rounded-full overflow-hidden">
                                             <div className="h-full bg-green-500 rounded-full"
                                                 style={{ width: `${Math.min((m.revenue / (dashboard.totalRevenue || 1)) * 100, 100)}%` }} />
                                         </div>
@@ -173,7 +173,7 @@ export default function AdminDashboard() {
                                     </div>
                                 ))}
                                 {(!dashboard.monthlyRevenue || dashboard.monthlyRevenue.length === 0) && (
-                                    <p className="text-sm text-campus-muted text-center py-8">No revenue data yet</p>
+                                    <p className="text-sm text-eVEStro-muted text-center py-8">No revenue data yet</p>
                                 )}
                             </div>
                         </div>
@@ -185,21 +185,21 @@ export default function AdminDashboard() {
                         {dashboard.recentBookings?.length > 0 ? (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
-                                    <thead><tr className="text-left text-campus-muted border-b border-campus-border/30">
+                                    <thead><tr className="text-left text-eVEStro-muted border-b border-eVEStro-border/30">
                                         <th className="pb-2">User</th><th className="pb-2">Event</th><th className="pb-2">Date</th>
                                     </tr></thead>
                                     <tbody>
                                         {dashboard.recentBookings.map((b) => (
-                                            <tr key={b._id} className="border-b border-campus-border/10">
+                                            <tr key={b._id} className="border-b border-eVEStro-border/10">
                                                 <td className="py-2">{b.user?.name}</td>
-                                                <td className="py-2 text-campus-muted">{b.event?.title}</td>
-                                                <td className="py-2 text-campus-muted">{formatDate(b.createdAt)}</td>
+                                                <td className="py-2 text-eVEStro-muted">{b.event?.title}</td>
+                                                <td className="py-2 text-eVEStro-muted">{formatDate(b.createdAt)}</td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             </div>
-                        ) : <p className="text-sm text-campus-muted text-center py-4">No bookings yet</p>}
+                        ) : <p className="text-sm text-eVEStro-muted text-center py-4">No bookings yet</p>}
                     </div>
                 </div>
             )}
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
             {activeTab === 'events' && (
                 <div className="space-y-4">
                     {events.length === 0 ? (
-                        <div className="text-center py-20 glass-card"><p className="text-campus-muted">No events</p></div>
+                        <div className="text-center py-20 glass-card"><p className="text-eVEStro-muted">No events</p></div>
                     ) : events.map((event) => (
                         <div key={event._id} className="glass-card p-6">
                             <div className="flex flex-col md:flex-row gap-4 items-start justify-between">
@@ -221,7 +221,7 @@ export default function AdminDashboard() {
                                         </span>
                                         {event.featured && <span className="badge bg-yellow-500/20 text-yellow-400">⭐</span>}
                                     </div>
-                                    <div className="flex flex-wrap gap-4 text-sm text-campus-muted">
+                                    <div className="flex flex-wrap gap-4 text-sm text-eVEStro-muted">
                                         <span>By: {event.organizer?.name}</span>
                                         <span>{event.college}</span>
                                         <span>{formatDate(event.date)}</span>
@@ -243,7 +243,7 @@ export default function AdminDashboard() {
                                         </>
                                     )}
                                     <button onClick={() => handleToggleFeatured(event._id)}
-                                        className={`flex items-center gap-1 px-3 py-2 rounded-xl text-sm border transition-all ${event.featured ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' : 'bg-campus-dark text-campus-muted border-campus-border hover:border-yellow-500/30'}`}>
+                                        className={`flex items-center gap-1 px-3 py-2 rounded-xl text-sm border transition-all ${event.featured ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' : 'bg-eVEStro-dark text-eVEStro-muted border-eVEStro-border hover:border-yellow-500/30'}`}>
                                         <Star className="w-4 h-4" /> {event.featured ? 'Unfeature' : 'Feature'}
                                     </button>
                                 </div>
@@ -257,26 +257,26 @@ export default function AdminDashboard() {
             {activeTab === 'users' && (
                 <div className="glass-card p-6">
                     {users.length === 0 ? (
-                        <p className="text-center text-campus-muted py-8">No users</p>
+                        <p className="text-center text-eVEStro-muted py-8">No users</p>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <thead><tr className="text-left text-campus-muted border-b border-campus-border/30">
+                                <thead><tr className="text-left text-eVEStro-muted border-b border-eVEStro-border/30">
                                     <th className="pb-3">Name</th><th className="pb-3">Email</th><th className="pb-3">Role</th><th className="pb-3">College</th><th className="pb-3">Status</th><th className="pb-3">Joined</th><th className="pb-3">Action</th>
                                 </tr></thead>
                                 <tbody>
                                     {users.map((u) => (
-                                        <tr key={u._id} className="border-b border-campus-border/10">
+                                        <tr key={u._id} className="border-b border-eVEStro-border/10">
                                             <td className="py-3 font-medium">{u.name}</td>
-                                            <td className="py-3 text-campus-muted">{u.email}</td>
+                                            <td className="py-3 text-eVEStro-muted">{u.email}</td>
                                             <td className="py-3"><span className="badge badge-tech">{u.role}</span></td>
-                                            <td className="py-3 text-campus-muted">{u.college || '-'}</td>
+                                            <td className="py-3 text-eVEStro-muted">{u.college || '-'}</td>
                                             <td className="py-3">
                                                 <span className={`badge ${u.isActive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                                                     {u.isActive ? 'Active' : 'Inactive'}
                                                 </span>
                                             </td>
-                                            <td className="py-3 text-campus-muted">{formatDate(u.createdAt)}</td>
+                                            <td className="py-3 text-eVEStro-muted">{formatDate(u.createdAt)}</td>
                                             <td className="py-3">
                                                 <button onClick={() => handleToggleUser(u._id)}
                                                     className={`text-xs px-3 py-1 rounded-lg border transition-all ${u.isActive ? 'text-red-400 border-red-500/30 hover:bg-red-500/10' : 'text-green-400 border-green-500/30 hover:bg-green-500/10'}`}>
@@ -296,26 +296,26 @@ export default function AdminDashboard() {
             {activeTab === 'transactions' && (
                 <div className="glass-card p-6">
                     {transactions.length === 0 ? (
-                        <p className="text-center text-campus-muted py-8">No transactions</p>
+                        <p className="text-center text-eVEStro-muted py-8">No transactions</p>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <thead><tr className="text-left text-campus-muted border-b border-campus-border/30">
+                                <thead><tr className="text-left text-eVEStro-muted border-b border-eVEStro-border/30">
                                     <th className="pb-3">User</th><th className="pb-3">Event</th><th className="pb-3">Amount</th><th className="pb-3">Status</th><th className="pb-3">Razorpay ID</th><th className="pb-3">Date</th>
                                 </tr></thead>
                                 <tbody>
                                     {transactions.map((t) => (
-                                        <tr key={t._id} className="border-b border-campus-border/10">
+                                        <tr key={t._id} className="border-b border-eVEStro-border/10">
                                             <td className="py-3">{t.user?.name}</td>
-                                            <td className="py-3 text-campus-muted">{t.event?.title}</td>
+                                            <td className="py-3 text-eVEStro-muted">{t.event?.title}</td>
                                             <td className="py-3 font-medium">₹{t.amount}</td>
                                             <td className="py-3">
                                                 <span className={`badge ${t.status === 'paid' ? 'bg-green-500/20 text-green-400' : t.status === 'failed' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
                                                     {t.status}
                                                 </span>
                                             </td>
-                                            <td className="py-3 text-campus-muted font-mono text-xs">{t.razorpayPaymentId || '-'}</td>
-                                            <td className="py-3 text-campus-muted">{formatDate(t.createdAt)}</td>
+                                            <td className="py-3 text-eVEStro-muted font-mono text-xs">{t.razorpayPaymentId || '-'}</td>
+                                            <td className="py-3 text-eVEStro-muted">{formatDate(t.createdAt)}</td>
                                         </tr>
                                     ))}
                                 </tbody>

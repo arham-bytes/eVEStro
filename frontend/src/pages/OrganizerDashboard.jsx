@@ -118,7 +118,7 @@ export default function OrganizerDashboard() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
                 <div>
                     <h1 className="section-heading mb-2">Organizer <span className="gradient-text">Dashboard</span></h1>
-                    <p className="text-campus-muted">Manage your events, {user?.name}.</p>
+                    <p className="text-eVEStro-muted">Manage your events, {user?.name}.</p>
                 </div>
                 <Link to="/organizer/create" className="btn-primary flex items-center gap-2">
                     <Plus className="w-5 h-5" /> Create Event
@@ -136,7 +136,7 @@ export default function OrganizerDashboard() {
                     <div key={stat.label} className="glass-card p-6 text-center">
                         <stat.icon className={`w-8 h-8 ${stat.color} mx-auto mb-2`} />
                         <p className="text-2xl font-bold">{stat.value}</p>
-                        <p className="text-sm text-campus-muted">{stat.label}</p>
+                        <p className="text-sm text-eVEStro-muted">{stat.label}</p>
                     </div>
                 ))}
             </div>
@@ -172,9 +172,9 @@ export default function OrganizerDashboard() {
                 <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-primary-500 animate-spin" /></div>
             ) : events.length === 0 ? (
                 <div className="text-center py-20 glass-card">
-                    <Calendar className="w-16 h-16 text-campus-muted/30 mx-auto mb-4" />
+                    <Calendar className="w-16 h-16 text-eVEStro-muted/30 mx-auto mb-4" />
                     <h3 className="text-xl font-semibold mb-2">No events yet</h3>
-                    <p className="text-campus-muted mb-6">Create your first event and start selling tickets.</p>
+                    <p className="text-eVEStro-muted mb-6">Create your first event and start selling tickets.</p>
                     <Link to="/organizer/create" className="btn-primary inline-flex items-center gap-2"><Plus className="w-4 h-4" /> Create Event</Link>
                 </div>
             ) : (
@@ -194,13 +194,13 @@ export default function OrganizerDashboard() {
                                             </span>
                                         )}
                                     </div>
-                                    <div className="flex flex-wrap gap-4 text-sm text-campus-muted">
+                                    <div className="flex flex-wrap gap-4 text-sm text-eVEStro-muted">
                                         <span>{formatDate(event.date)}</span>
                                         <span>{event.venue}, {event.college}</span>
                                         <span>{event.ticketsSold}/{event.totalTickets} sold</span>
                                         <span>Your price: {formatPrice(event.basePrice || event.price)}</span>
                                         {event.basePrice > 0 && event.price !== event.basePrice && (
-                                            <span className="text-campus-muted/60">Customer pays: {formatPrice(event.price)}</span>
+                                            <span className="text-eVEStro-muted/60">Customer pays: {formatPrice(event.price)}</span>
                                         )}
                                     </div>
                                 </div>
@@ -229,25 +229,25 @@ export default function OrganizerDashboard() {
 
                             {/* Registrations Dropdown */}
                             {selectedEvent === event._id && (
-                                <div className="mt-4 pt-4 border-t border-campus-border/50">
+                                <div className="mt-4 pt-4 border-t border-eVEStro-border/50">
                                     {bookingsLoading ? (
                                         <Loader2 className="w-5 h-5 text-primary-500 animate-spin mx-auto" />
                                     ) : bookings.length === 0 ? (
-                                        <p className="text-sm text-campus-muted text-center py-4">No registrations yet</p>
+                                        <p className="text-sm text-eVEStro-muted text-center py-4">No registrations yet</p>
                                     ) : (
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-sm">
-                                                <thead><tr className="text-left text-campus-muted border-b border-campus-border/30">
+                                                <thead><tr className="text-left text-eVEStro-muted border-b border-eVEStro-border/30">
                                                     <th className="pb-2">Attendee</th><th className="pb-2">Email</th><th className="pb-2">College</th><th className="pb-2">Status</th><th className="pb-2">Booked</th>
                                                 </tr></thead>
                                                 <tbody>
                                                     {bookings.map((b) => (
-                                                        <tr key={b._id} className="border-b border-campus-border/10">
+                                                        <tr key={b._id} className="border-b border-eVEStro-border/10">
                                                             <td className="py-2">{b.user?.name}</td>
-                                                            <td className="py-2 text-campus-muted">{b.user?.email}</td>
-                                                            <td className="py-2 text-campus-muted">{b.user?.college || '-'}</td>
+                                                            <td className="py-2 text-eVEStro-muted">{b.user?.email}</td>
+                                                            <td className="py-2 text-eVEStro-muted">{b.user?.college || '-'}</td>
                                                             <td className="py-2"><span className={`badge text-xs ${b.status === 'checked-in' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'}`}>{b.status}</span></td>
-                                                            <td className="py-2 text-campus-muted">{formatDate(b.createdAt)}</td>
+                                                            <td className="py-2 text-eVEStro-muted">{formatDate(b.createdAt)}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
@@ -265,25 +265,25 @@ export default function OrganizerDashboard() {
             {selectedVolunteerEvent && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedVolunteerEvent(null)}>
                     <div className="glass-card p-6 max-w-md w-full animate-slide-up relative" onClick={(e) => e.stopPropagation()}>
-                        <button onClick={() => setSelectedVolunteerEvent(null)} className="absolute top-4 right-4 text-campus-muted hover:text-white">
+                        <button onClick={() => setSelectedVolunteerEvent(null)} className="absolute top-4 right-4 text-eVEStro-muted hover:text-white">
                             <X className="w-5 h-5" />
                         </button>
                         <h2 className="text-xl font-semibold mb-2">Manage Volunteers</h2>
-                        <p className="text-sm text-campus-muted mb-6">Volunteers can scan check-in QR codes using their own accounts for <strong className="text-white">{selectedVolunteerEvent.title}</strong>.</p>
+                        <p className="text-sm text-eVEStro-muted mb-6">Volunteers can scan check-in QR codes using their own accounts for <strong className="text-white">{selectedVolunteerEvent.title}</strong>.</p>
                         
                         <div className="mb-6">
                             <h3 className="font-medium mb-3">Current Volunteers</h3>
                             {selectedVolunteerEvent.volunteers && selectedVolunteerEvent.volunteers.length > 0 ? (
                                 <ul className="space-y-2">
                                     {selectedVolunteerEvent.volunteers.map(v => (
-                                        <li key={v._id} className="text-sm bg-campus-dark px-3 py-2 rounded flex justify-between items-center">
+                                        <li key={v._id} className="text-sm bg-eVEStro-dark px-3 py-2 rounded flex justify-between items-center">
                                             <span>{v.name}</span>
-                                            <span className="text-campus-muted text-xs">{v.email}</span>
+                                            <span className="text-eVEStro-muted text-xs">{v.email}</span>
                                         </li>
                                     ))}
                                 </ul>
                             ) : (
-                                <p className="text-sm text-campus-muted">No volunteers added yet.</p>
+                                <p className="text-sm text-eVEStro-muted">No volunteers added yet.</p>
                             )}
                         </div>
 

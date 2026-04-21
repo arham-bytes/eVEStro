@@ -79,7 +79,7 @@ export default function CreateEvent() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div className="mb-8">
                 <h1 className="section-heading mb-2">Create <span className="gradient-text">Event</span></h1>
-                <p className="text-campus-muted">Fill in the details to create your event. It will be reviewed by admin before going live.</p>
+                <p className="text-eVEStro-muted">Fill in the details to create your event. It will be reviewed by admin before going live.</p>
             </div>
 
             <form onSubmit={handleSubmit} className="glass-card p-8 space-y-6">
@@ -87,15 +87,15 @@ export default function CreateEvent() {
                 <div>
                     <label className="block text-sm font-medium mb-2">Event Banner</label>
                     <label className="block cursor-pointer">
-                        <div className={`border-2 border-dashed rounded-2xl transition-all ${imagePreview ? 'border-primary-500/50' : 'border-campus-border hover:border-primary-500/30'
+                        <div className={`border-2 border-dashed rounded-2xl transition-all ${imagePreview ? 'border-primary-500/50' : 'border-eVEStro-border hover:border-primary-500/30'
                             } overflow-hidden`}>
                             {imagePreview ? (
                                 <img src={imagePreview} alt="Preview" className="w-full h-64 object-cover" />
                             ) : (
-                                <div className="flex flex-col items-center justify-center py-16 text-campus-muted">
+                                <div className="flex flex-col items-center justify-center py-16 text-eVEStro-muted">
                                     <Upload className="w-10 h-10 mb-3 text-primary-400/50" />
                                     <p className="text-sm">Click to upload event banner</p>
-                                    <p className="text-xs mt-1 text-campus-muted/60">JPG, PNG, WebP — Max 5MB</p>
+                                    <p className="text-xs mt-1 text-eVEStro-muted/60">JPG, PNG, WebP — Max 5MB</p>
                                 </div>
                             )}
                         </div>
@@ -127,7 +127,7 @@ export default function CreateEvent() {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-campus-muted mb-2 flex items-center gap-2">
+                        <label className="block text-sm font-medium text-eVEStro-muted mb-2 flex items-center gap-2">
                             <Building2 className="w-4 h-4" /> College Name
                         </label>
                         <CollegeAutocomplete 
@@ -135,9 +135,9 @@ export default function CreateEvent() {
                             onChange={(val) => setForm({ ...form, college: val })}
                             placeholder="Search your college (e.g. LPU, IIT...)"
                         />
-                        <label className="flex items-center gap-2 text-sm text-campus-muted cursor-pointer mt-2">
+                        <label className="flex items-center gap-2 text-sm text-eVEStro-muted cursor-pointer mt-2">
                             <input type="checkbox" checked={form.openForAll} onChange={(e) => setForm({ ...form, openForAll: e.target.checked })} 
-                                className="w-4 h-4 rounded border-campus-border text-primary-500 focus:ring-primary-500 bg-campus-dark" />
+                                className="w-4 h-4 rounded border-eVEStro-border text-primary-500 focus:ring-primary-500 bg-eVEStro-dark" />
                             Open for all colleges
                         </label>
                     </div>
@@ -165,19 +165,19 @@ export default function CreateEvent() {
                 </div>
 
                 {/* Registration End Date */}
-                <div className="pt-4 border-t border-campus-border">
+                <div className="pt-4 border-t border-eVEStro-border">
                     <label className="block text-sm font-medium mb-2 flex items-center gap-2"><Clock className="w-4 h-4 text-primary-400" /> Registration End Date</label>
                     <input type="date" value={form.registrationEndDate} onChange={(e) => setForm({ ...form, registrationEndDate: e.target.value })}
                         className="input-field" />
-                    <p className="text-xs mt-2 text-campus-muted">Tickets will not be sellable after this date. Leave empty to close only when event starts.</p>
+                    <p className="text-xs mt-2 text-eVEStro-muted">Tickets will not be sellable after this date. Leave empty to close only when event starts.</p>
                 </div>
 
                 {/* Ticket Tiers / Bundles */}
-                <div className="pt-6 border-t border-campus-border">
+                <div className="pt-6 border-t border-eVEStro-border">
                     <div className="flex items-center justify-between mb-4">
                         <div>
                             <h3 className="text-lg font-semibold gradient-text">Ticket Offers & Bundles</h3>
-                            <p className="text-sm text-campus-muted">Create special packages like "3 Tickets Pack" or "VIP Access"</p>
+                            <p className="text-sm text-eVEStro-muted">Create special packages like "3 Tickets Pack" or "VIP Access"</p>
                         </div>
                         <button type="button" onClick={addTier} className="btn-secondary py-2 px-4 text-sm flex items-center gap-2">
                             <Plus className="w-4 h-4" /> Add Offer
@@ -187,29 +187,29 @@ export default function CreateEvent() {
                     {form.ticketTiers.length > 0 && (
                         <div className="space-y-4">
                             {form.ticketTiers.map((tier, index) => (
-                                <div key={index} className="p-4 rounded-xl border border-campus-border bg-campus-dark/50 space-y-4">
+                                <div key={index} className="p-4 rounded-xl border border-eVEStro-border bg-eVEStro-dark/50 space-y-4">
                                     <div className="flex justify-between items-start gap-4">
                                         <div className="flex-1 space-y-4">
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="block text-xs font-medium mb-1 text-campus-muted">Offer Name</label>
+                                                    <label className="block text-xs font-medium mb-1 text-eVEStro-muted">Offer Name</label>
                                                     <input type="text" value={tier.name} onChange={(e) => updateTier(index, 'name', e.target.value)}
                                                         className="input-field py-2" placeholder="e.g. Early Bird Combo" />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-medium mb-1 text-campus-muted">Quantity (Tickets included)</label>
+                                                    <label className="block text-xs font-medium mb-1 text-eVEStro-muted">Quantity (Tickets included)</label>
                                                     <input type="number" min="1" value={tier.quantity} onChange={(e) => updateTier(index, 'quantity', Number(e.target.value))}
                                                         className="input-field py-2" />
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="block text-xs font-medium mb-1 text-campus-muted">Price per bundle (₹)</label>
+                                                    <label className="block text-xs font-medium mb-1 text-eVEStro-muted">Price per bundle (₹)</label>
                                                     <input type="number" min="0" value={tier.basePrice} onChange={(e) => updateTier(index, 'basePrice', Number(e.target.value))}
                                                         className="input-field py-2" />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-medium mb-1 text-campus-muted">Description</label>
+                                                    <label className="block text-xs font-medium mb-1 text-eVEStro-muted">Description</label>
                                                     <input type="text" value={tier.description} onChange={(e) => updateTier(index, 'description', e.target.value)}
                                                         className="input-field py-2" placeholder="e.g. Save ₹100 on group entry" />
                                                 </div>
@@ -220,7 +220,7 @@ export default function CreateEvent() {
                                         </button>
                                     </div>
                                     {tier.basePrice > 0 && (
-                                        <p className="text-[10px] text-campus-muted">
+                                        <p className="text-[10px] text-eVEStro-muted">
                                             Customer pays: <span className="text-primary-400">₹{Math.ceil(tier.basePrice * 1.10)}</span> (includes platform fee)
                                         </p>
                                     )}

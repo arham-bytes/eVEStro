@@ -21,7 +21,7 @@ if (
     const storage = new CloudinaryStorage({
         cloudinary,
         params: {
-            folder: 'campuspass',
+            folder: 'evestro',
             allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
             transformation: [{ width: 1200, height: 630, crop: 'limit' }],
         },

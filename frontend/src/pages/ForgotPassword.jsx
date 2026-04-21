@@ -32,7 +32,7 @@ export default function ForgotPassword() {
             <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-accent-600/20 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="w-full max-w-md z-10 animate-fade-in">
-                <Link to="/login" className="flex items-center gap-2 text-campus-muted hover:text-white mb-6 w-fit transition-colors">
+                <Link to="/login" className="flex items-center gap-2 text-eVEStro-muted hover:text-white mb-6 w-fit transition-colors">
                     <ArrowLeft className="w-4 h-4" /> Back to Login
                 </Link>
 
@@ -42,7 +42,7 @@ export default function ForgotPassword() {
                             <Mail className="w-8 h-8 text-primary-400" />
                         </div>
                         <h1 className="text-2xl font-bold font-display mb-2">Forgot Password?</h1>
-                        <p className="text-campus-muted">
+                        <p className="text-eVEStro-muted">
                             {success 
                                 ? "Check your email for the reset link."
                                 : "No worries, we'll send you reset instructions."}
@@ -55,7 +55,7 @@ export default function ForgotPassword() {
                                 <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                                 <div>
                                     <p className="text-sm font-medium text-green-400">Email sent to {email}</p>
-                                    <p className="text-xs text-campus-muted mt-1">Please check your spam or junk folder if you don't see it within a few minutes.</p>
+                                    <p className="text-xs text-eVEStro-muted mt-1">Please check your spam or junk folder if you don't see it within a few minutes.</p>
                                 </div>
                             </div>
                             <button
@@ -71,7 +71,7 @@ export default function ForgotPassword() {
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-campus-muted ml-1 flex items-center justify-between">
+                                <label className="text-sm font-medium text-eVEStro-muted ml-1 flex items-center justify-between">
                                     Email
                                 </label>
                                 <div className="relative">
@@ -83,7 +83,7 @@ export default function ForgotPassword() {
                                         className="input-field pl-10"
                                         placeholder="Enter your registered email"
                                     />
-                                    <Mail className="w-5 h-5 text-campus-muted absolute left-3 top-1/2 -translate-y-1/2" />
+                                    <Mail className="w-5 h-5 text-eVEStro-muted absolute left-3 top-1/2 -translate-y-1/2" />
                                 </div>
                             </div>
 

@@ -12,7 +12,7 @@ const api = axios.create({
 // Request interceptor - attach JWT
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('campuspass_token');
+        const token = localStorage.getItem('evestro_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -21,13 +21,13 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Response interceptor - handle auth errors
+// Response interceptor to handle token expiration
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
-            localStorage.removeItem('campuspass_token');
-            localStorage.removeItem('campuspass_user');
+        if (error.response && error.response.status === 401) {
+            localStorage.removeItem('evestro_token');
+            localStorage.removeItem('evestro_user');
             // Don't redirect on login/register failures
             if (!error.config.url.includes('/auth/')) {
                 window.location.href = '/login';

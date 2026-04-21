@@ -91,7 +91,7 @@ export default function QRScanner({ onScan, onClose }) {
                 )}
 
                 <div className="mt-4 flex flex-col items-center gap-2">
-                    <p className="text-[10px] text-campus-muted text-center uppercase tracking-wide">
+                    <p className="text-[10px] text-eVEStro-muted text-center uppercase tracking-wide">
                         Detection Area: Square Center
                     </p>
                     <button 

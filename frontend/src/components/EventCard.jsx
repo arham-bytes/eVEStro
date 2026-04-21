@@ -25,7 +25,7 @@ export default function EventCard({ event }) {
         <Link to={`/events/${_id}`} className="glass-card-hover group block overflow-hidden">
             {/* Image */}
             <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-campus-card via-transparent to-transparent z-10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-eVEStro-card via-transparent to-transparent z-10" />
                 {image ? (
                     <img src={image} alt={title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 ) : (
@@ -49,15 +49,15 @@ export default function EventCard({ event }) {
                     {title}
                 </h3>
                 <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-campus-muted text-sm">
+                    <div className="flex items-center gap-2 text-eVEStro-muted text-sm">
                         <Calendar className="w-4 h-4 text-primary-400" />
                         <span>{formatDate(date)}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-campus-muted text-sm">
+                    <div className="flex items-center gap-2 text-eVEStro-muted text-sm">
                         <MapPin className="w-4 h-4 text-primary-400" />
                         <span className="line-clamp-1">{venue}, {college}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-campus-muted text-sm">
+                    <div className="flex items-center gap-2 text-eVEStro-muted text-sm">
                         <Users className="w-4 h-4 text-primary-400" />
                         <span>{isUnlimited ? 'Unlimited spots' : (availableTickets > 0 ? `${availableTickets} spots left` : 'Sold out')}</span>
                     </div>
@@ -65,7 +65,7 @@ export default function EventCard({ event }) {
 
                 {/* Progress bar */}
                 <div className="mb-3">
-                    <div className="h-1.5 bg-campus-dark rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-eVEStro-dark rounded-full overflow-hidden">
                         <div
                             className={`h-full rounded-full transition-all duration-500 ${soldPercentage > 80 ? 'bg-red-500' : soldPercentage > 50 ? 'bg-yellow-500' : 'bg-primary-500'
                                 }`}
@@ -79,7 +79,7 @@ export default function EventCard({ event }) {
                     <span className={`text-lg font-bold ${price === 0 ? 'text-green-400' : 'text-white'}`}>
                         {formatPrice(price)}
                     </span>
-                    <span className="text-xs text-campus-muted">{soldPercentage}% sold</span>
+                    <span className="text-xs text-eVEStro-muted">{soldPercentage}% sold</span>
                 </div>
             </div>
         </Link>

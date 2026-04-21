@@ -44,7 +44,7 @@ export default function VerifyTicket() {
                         <Ticket className="w-8 h-8 text-yellow-500" />
                     </div>
                     <h2 className="text-2xl font-bold mb-2">Authentication Required</h2>
-                    <p className="text-campus-muted mb-6">
+                    <p className="text-eVEStro-muted mb-6">
                         You must be logged in as an Organizer or Volunteer to verify tickets.
                     </p>
                     <Link to="/login" className="btn-primary inline-flex">
@@ -73,7 +73,7 @@ export default function VerifyTicket() {
             <div className="glass-card max-w-md w-full p-8 relative z-10 text-center">
                 <button 
                     onClick={() => navigate('/organizer')} 
-                    className="absolute top-4 left-4 text-campus-muted hover:text-white transition-colors flex items-center gap-1 text-sm"
+                    className="absolute top-4 left-4 text-eVEStro-muted hover:text-white transition-colors flex items-center gap-1 text-sm"
                 >
                     <ArrowLeft className="w-4 h-4" /> Dashboard
                 </button>
@@ -93,25 +93,25 @@ export default function VerifyTicket() {
                         {result?.success ? 'Ticket Verified! ✅' : 'Verification Failed ❌'}
                     </h2>
                     
-                    <p className="text-campus-muted mb-6 text-lg">
+                    <p className="text-eVEStro-muted mb-6 text-lg">
                         {result?.message}
                     </p>
                 </div>
 
                 {result?.success && result?.data && (
-                    <div className="bg-campus-dark rounded-xl p-5 text-left border border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+                    <div className="bg-eVEStro-dark rounded-xl p-5 text-left border border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
                         <div className="space-y-3">
                             <div>
-                                <p className="text-xs text-campus-muted uppercase tracking-wider">Attendee</p>
+                                <p className="text-xs text-eVEStro-muted uppercase tracking-wider">Attendee</p>
                                 <p className="font-semibold text-lg">{result.data.attendee}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-campus-muted uppercase tracking-wider">Event</p>
+                                <p className="text-xs text-eVEStro-muted uppercase tracking-wider">Event</p>
                                 <p className="font-medium text-primary-400">{result.data.event}</p>
                             </div>
-                            <div className="border-t border-campus-border/50 pt-3 flex justify-between items-center">
+                            <div className="border-t border-eVEStro-border/50 pt-3 flex justify-between items-center">
                                 <div>
-                                    <p className="text-xs text-campus-muted uppercase tracking-wider">Ticket ID</p>
+                                    <p className="text-xs text-eVEStro-muted uppercase tracking-wider">Ticket ID</p>
                                     <p className="font-mono text-sm">{result.data.ticketId}</p>
                                 </div>
                             </div>
@@ -120,7 +120,7 @@ export default function VerifyTicket() {
                 )}
 
                 {!result?.success && result?.checkedInAt && (
-                    <div className="bg-campus-dark/50 rounded-xl p-4 text-sm text-campus-muted mt-4">
+                    <div className="bg-eVEStro-dark/50 rounded-xl p-4 text-sm text-eVEStro-muted mt-4">
                         This ticket was already checked in at:<br/>
                         <span className="font-semibold text-white">{formatDate(result.checkedInAt)}</span>
                     </div>

@@ -33,7 +33,7 @@ export default {
                     800: '#86198f',
                     900: '#701a75',
                 },
-                campus: {
+                evestro: {
                     dark: '#0f0f23',
                     darker: '#0a0a1a',
                     card: '#1a1a2e',

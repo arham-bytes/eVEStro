@@ -1,7 +1,7 @@
 {
-  "name": "campuspass-backend",
+  "name": "evestro-backend",
   "version": "1.0.0",
-  "description": "CampusPass - College Event Management & Ticketing Platform API",
+  "description": "eVEStro - College Event Management & Ticketing Platform API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
