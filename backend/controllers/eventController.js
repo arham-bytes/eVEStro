@@ -113,9 +113,7 @@ exports.createEvent = async (req, res, next) => {
             return res.status(400).json({ success: false, errors: errors.array() });
         }
 
-        // Organizer sends 'price' as their base price
         const basePrice = Number(req.body.price) || 0;
-        // Customer-facing price = base price + 10% platform fee (rounded up)
         const customerPrice = basePrice > 0 ? Math.ceil(basePrice * (1 + PLATFORM_MARKUP)) : 0;
 
         const eventData = {
@@ -128,6 +126,28 @@ exports.createEvent = async (req, res, next) => {
         // Handle image upload
         if (req.file) {
             eventData.image = req.file.path || req.file.url || `/uploads/${req.file.filename}`;
+        }
+
+        // Handle ticket tiers
+        let ticketTiers = req.body.ticketTiers;
+        if (typeof ticketTiers === 'string') {
+            try {
+                ticketTiers = JSON.parse(ticketTiers);
+            } catch (error) {
+                ticketTiers = null;
+            }
+        }
+
+        if (ticketTiers && Array.isArray(ticketTiers)) {
+            eventData.ticketTiers = ticketTiers.map(tier => {
+                const base = Number(tier.basePrice) || 0;
+                return {
+                    ...tier,
+                    basePrice: base,
+                    price: base > 0 ? Math.ceil(base * (1 + PLATFORM_MARKUP)) : 0,
+                    quantity: Number(tier.quantity) || 1
+                };
+            });
         }
 
         const event = await Event.create(eventData);
@@ -163,6 +183,28 @@ exports.updateEvent = async (req, res, next) => {
             const basePrice = Number(req.body.price) || 0;
             req.body.basePrice = basePrice;
             req.body.price = basePrice > 0 ? Math.ceil(basePrice * (1 + PLATFORM_MARKUP)) : 0;
+        }
+
+        // Handle ticket tiers update
+        let ticketTiers = req.body.ticketTiers;
+        if (typeof ticketTiers === 'string') {
+            try {
+                ticketTiers = JSON.parse(ticketTiers);
+            } catch (error) {
+                ticketTiers = null;
+            }
+        }
+
+        if (ticketTiers && Array.isArray(ticketTiers)) {
+            req.body.ticketTiers = ticketTiers.map(tier => {
+                const base = Number(tier.basePrice) || 0;
+                return {
+                    ...tier,
+                    basePrice: base,
+                    price: base > 0 ? Math.ceil(base * (1 + PLATFORM_MARKUP)) : 0,
+                    quantity: Number(tier.quantity) || 1
+                };
+            });
         }
 
         event = await Event.findByIdAndUpdate(req.params.id, req.body, {

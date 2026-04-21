@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, Loader2, Calendar, MapPin, Tag, DollarSign, Users, FileText, Building2 } from 'lucide-react';
+import { Upload, Loader2, Calendar, MapPin, Tag, DollarSign, Users, FileText, Building2, Plus, Trash2, Clock } from 'lucide-react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import CollegeAutocomplete from '../components/CollegeAutocomplete';
@@ -14,6 +14,7 @@ export default function CreateEvent() {
     const [form, setForm] = useState({
         title: '', description: '', category: 'Tech', college: '', venue: '',
         date: '', time: '', price: 0, totalTickets: '', openForAll: true,
+        registrationEndDate: '', ticketTiers: [],
     });
     const [imageFile, setImageFile] = useState(null);
 
@@ -25,6 +26,25 @@ export default function CreateEvent() {
         }
     };
 
+    const addTier = () => {
+        setForm({
+            ...form,
+            ticketTiers: [...form.ticketTiers, { name: '', basePrice: 0, quantity: 1, description: '' }]
+        });
+    };
+
+    const removeTier = (index) => {
+        const newTiers = [...form.ticketTiers];
+        newTiers.splice(index, 1);
+        setForm({ ...form, ticketTiers: newTiers });
+    };
+
+    const updateTier = (index, field, value) => {
+        const newTiers = [...form.ticketTiers];
+        newTiers[index] = { ...newTiers[index], [field]: value };
+        setForm({ ...form, ticketTiers: newTiers });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!form.title || !form.description || !form.college || !form.venue || !form.date) {
@@ -33,7 +53,13 @@ export default function CreateEvent() {
         setLoading(true);
         try {
             const formData = new FormData();
-            Object.keys(form).forEach(key => formData.append(key, form[key]));
+            Object.keys(form).forEach(key => {
+                if (key === 'ticketTiers') {
+                    formData.append(key, JSON.stringify(form[key]));
+                } else {
+                    formData.append(key, form[key]);
+                }
+            });
             if (imageFile) formData.append('image', imageFile);
 
             await api.post('/events', formData, {
@@ -138,29 +164,77 @@ export default function CreateEvent() {
                         className="input-field" placeholder="e.g. 10:00 AM - 5:00 PM" />
                 </div>
 
-                {/* Price & Tickets */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-2 flex items-center gap-2"><DollarSign className="w-4 h-4 text-primary-400" /> Your Price (₹) *</label>
-                        <input type="number" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
-                            className="input-field" placeholder="0 for free" />
-                        {form.price > 0 && (
-                            <p className="text-xs mt-2 text-campus-muted">
-                                Customers will pay <span className="text-primary-400 font-semibold">₹{Math.ceil(form.price * 1.10).toLocaleString('en-IN')}</span>
-                                <span className="text-campus-muted/60"> (includes 10% platform fee)</span>
-                            </p>
-                        )}
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-2 flex items-center gap-2"><Users className="w-4 h-4 text-primary-400" /> Total Tickets</label>
-                        <input type="number" min="1" value={form.totalTickets} onChange={(e) => setForm({ ...form, totalTickets: e.target.value ? Number(e.target.value) : '' })}
-                            className="input-field" placeholder="Leave empty for unlimited" />
-                    </div>
+                {/* Registration End Date */}
+                <div className="pt-4 border-t border-campus-border">
+                    <label className="block text-sm font-medium mb-2 flex items-center gap-2"><Clock className="w-4 h-4 text-primary-400" /> Registration End Date</label>
+                    <input type="date" value={form.registrationEndDate} onChange={(e) => setForm({ ...form, registrationEndDate: e.target.value })}
+                        className="input-field" />
+                    <p className="text-xs mt-2 text-campus-muted">Tickets will not be sellable after this date. Leave empty to close only when event starts.</p>
                 </div>
 
-                <button type="submit" disabled={loading} className="btn-primary w-full text-lg flex items-center justify-center gap-2">
-                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Create Event'}
-                </button>
+                {/* Ticket Tiers / Bundles */}
+                <div className="pt-6 border-t border-campus-border">
+                    <div className="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 className="text-lg font-semibold gradient-text">Ticket Offers & Bundles</h3>
+                            <p className="text-sm text-campus-muted">Create special packages like "3 Tickets Pack" or "VIP Access"</p>
+                        </div>
+                        <button type="button" onClick={addTier} className="btn-secondary py-2 px-4 text-sm flex items-center gap-2">
+                            <Plus className="w-4 h-4" /> Add Offer
+                        </button>
+                    </div>
+
+                    {form.ticketTiers.length > 0 && (
+                        <div className="space-y-4">
+                            {form.ticketTiers.map((tier, index) => (
+                                <div key={index} className="p-4 rounded-xl border border-campus-border bg-campus-dark/50 space-y-4">
+                                    <div className="flex justify-between items-start gap-4">
+                                        <div className="flex-1 space-y-4">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-xs font-medium mb-1 text-campus-muted">Offer Name</label>
+                                                    <input type="text" value={tier.name} onChange={(e) => updateTier(index, 'name', e.target.value)}
+                                                        className="input-field py-2" placeholder="e.g. Early Bird Combo" />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-medium mb-1 text-campus-muted">Quantity (Tickets included)</label>
+                                                    <input type="number" min="1" value={tier.quantity} onChange={(e) => updateTier(index, 'quantity', Number(e.target.value))}
+                                                        className="input-field py-2" />
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-xs font-medium mb-1 text-campus-muted">Price per bundle (₹)</label>
+                                                    <input type="number" min="0" value={tier.basePrice} onChange={(e) => updateTier(index, 'basePrice', Number(e.target.value))}
+                                                        className="input-field py-2" />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-medium mb-1 text-campus-muted">Description</label>
+                                                    <input type="text" value={tier.description} onChange={(e) => updateTier(index, 'description', e.target.value)}
+                                                        className="input-field py-2" placeholder="e.g. Save ₹100 on group entry" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" onClick={() => removeTier(index)} className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+                                            <Trash2 className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                    {tier.basePrice > 0 && (
+                                        <p className="text-[10px] text-campus-muted">
+                                            Customer pays: <span className="text-primary-400">₹{Math.ceil(tier.basePrice * 1.10)}</span> (includes platform fee)
+                                        </p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <div className="pt-6">
+                    <button type="submit" disabled={loading} className="btn-primary w-full text-lg flex items-center justify-center gap-2">
+                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Create Event'}
+                    </button>
+                </div>
             </form>
         </div>
     );

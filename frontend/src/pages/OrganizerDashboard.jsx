@@ -92,6 +92,16 @@ export default function OrganizerDashboard() {
         }
     };
 
+    const handleToggleRegistration = async (eventId, currentStatus) => {
+        try {
+            await api.put(`/events/${eventId}`, { isRegistrationClosed: !currentStatus });
+            toast.success(`Registration ${!currentStatus ? 'closed' : 'opened'} successfully!`);
+            fetchMyEvents();
+        } catch (error) {
+            toast.error('Failed to update registration status');
+        }
+    };
+
     const totalRevenue = events.reduce((sum, e) => sum + (e.ticketsSold * (e.basePrice || e.price)), 0);
     const totalTicketsSold = events.reduce((sum, e) => sum + e.ticketsSold, 0);
 
@@ -178,6 +188,11 @@ export default function OrganizerDashboard() {
                                         {getStatusIcon(event.status)}
                                         <h3 className="text-lg font-semibold">{event.title}</h3>
                                         <span className={`badge ${getCategoryBadgeClass(event.category)}`}>{event.category}</span>
+                                        {event.isRegistrationClosed && (
+                                            <span className="badge bg-red-500/20 text-red-400 border border-red-500/30">
+                                                Registration Closed
+                                            </span>
+                                        )}
                                     </div>
                                     <div className="flex flex-wrap gap-4 text-sm text-campus-muted">
                                         <span>{formatDate(event.date)}</span>
@@ -189,7 +204,15 @@ export default function OrganizerDashboard() {
                                         )}
                                     </div>
                                 </div>
-                                <div className="flex gap-2 flex-shrink-0">
+                                <div className="flex flex-wrap gap-2 flex-shrink-0">
+                                    <button 
+                                        onClick={() => handleToggleRegistration(event._id, event.isRegistrationClosed)}
+                                        className={`btn-secondary text-sm !px-3 !py-2 flex items-center gap-1 ${event.isRegistrationClosed ? '!text-green-400 !border-green-500/30 hover:!bg-green-500/10' : '!text-red-400 !border-red-500/30 hover:!bg-red-500/10'}`}
+                                        title={event.isRegistrationClosed ? 'Open Registration' : 'Close Registration'}
+                                    >
+                                        {event.isRegistrationClosed ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                                        {event.isRegistrationClosed ? 'Open' : 'Close'} Sales
+                                    </button>
                                     <button onClick={() => setSelectedVolunteerEvent(event)}
                                         className="btn-secondary text-sm !px-3 !py-2 flex items-center gap-1">
                                         <Shield className="w-4 h-4" /> Volunteers

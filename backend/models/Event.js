@@ -95,6 +95,20 @@ const eventSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         }],
+        ticketTiers: [{
+            name: { type: String, required: true },
+            basePrice: { type: Number, required: true, min: 0 },
+            price: { type: Number, required: true, min: 0 },
+            quantity: { type: Number, default: 1, min: 1 },
+            description: { type: String },
+        }],
+        registrationEndDate: {
+            type: Date,
+        },
+        isRegistrationClosed: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 );

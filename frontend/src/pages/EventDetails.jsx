@@ -17,6 +17,7 @@ export default function EventDetails() {
     const [couponCode, setCouponCode] = useState('');
     const [walletBalance, setWalletBalance] = useState(user?.walletBalance || 0);
     const [showShareQR, setShowShareQR] = useState(false);
+    const [selectedTierId, setSelectedTierId] = useState('');
 
     useEffect(() => {
         fetchEvent();
@@ -54,24 +55,35 @@ export default function EventDetails() {
 
         setBooking(true);
         try {
-            if (event.price === 0) {
+            const bookingPayload = { 
+                eventId: id, 
+                couponCode,
+                tierId: selectedTierId || undefined
+            };
+
+            if (event.price === 0 && !selectedTierId) {
                 // Free event — book directly
-                const { data } = await api.post('/bookings', { eventId: id, couponCode });
+                const { data } = await api.post('/bookings', bookingPayload);
                 toast.success('Ticket booked successfully! 🎉');
                 navigate('/dashboard');
                 return;
             }
 
-            // Paid event — wallet only
-            if (walletBalance < event.price) {
-                toast.error(`Insufficient wallet balance! You need ₹${event.price} but have ₹${walletBalance}. Please add money to your wallet.`);
+            // Paid event — determine price based on tier if selected
+            let finalPrice = event.price;
+            if (selectedTierId && event.ticketTiers) {
+                const tier = event.ticketTiers.find(t => t._id === selectedTierId);
+                if (tier) finalPrice = tier.price;
+            }
+
+            if (finalPrice > 0 && walletBalance < finalPrice) {
+                toast.error(`Insufficient wallet balance! You need ₹${finalPrice} but have ₹${walletBalance}. Please add money to your wallet.`);
                 return;
             }
 
-            // Pay from wallet
+            // Pay with wallet
             const { data } = await api.post('/bookings', {
-                eventId: id,
-                couponCode,
+                ...bookingPayload,
                 paymentMethod: 'wallet',
             });
 
@@ -114,8 +126,17 @@ export default function EventDetails() {
     const isUnlimited = !event.totalTickets;
     const available = isUnlimited ? Infinity : (event.totalTickets - event.ticketsSold);
     const soldPercentage = isUnlimited ? 0 : Math.round((event.ticketsSold / event.totalTickets) * 100);
-    const hasEnoughBalance = walletBalance >= event.price;
+    
+    let currentPrice = event.price;
+    if (selectedTierId && event.ticketTiers) {
+        const tier = event.ticketTiers.find(t => t._id === selectedTierId);
+        if (tier) currentPrice = tier.price;
+    }
+
+    const hasEnoughBalance = walletBalance >= currentPrice;
     const isOrganizer = isAuthenticated && user?._id === event.organizer?._id;
+    
+    const isRegistrationEnded = event.isRegistrationClosed || (event.registrationEndDate && new Date() > new Date(event.registrationEndDate));
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -184,8 +205,15 @@ export default function EventDetails() {
                             <p className="text-sm text-campus-muted mt-1">per ticket</p>
                         </div>
 
-                        {/* Availability */}
-                        {isOrganizer ? (
+                        {/* Registration Status */}
+                        {isRegistrationEnded ? (
+                            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
+                                <p className="text-red-400 font-semibold flex items-center justify-center gap-2">
+                                    <Clock className="w-4 h-4" /> Registration Closed
+                                </p>
+                                <p className="text-[10px] text-red-400/60 mt-1">Check back for future events</p>
+                            </div>
+                        ) : isOrganizer ? (
                             <div>
                                 <div className="flex justify-between text-sm mb-2">
                                     <span className="text-campus-muted">Availability (Organizer View)</span>
@@ -203,6 +231,37 @@ export default function EventDetails() {
                                 <span className={`font-semibold ${available > 0 ? 'text-green-400' : 'text-red-400'}`}>
                                     {available > 0 ? 'Tickets Available' : 'Sold Out'}
                                 </span>
+                            </div>
+                        )}
+
+                        {/* Ticket Tier Selection */}
+                        {event.ticketTiers && event.ticketTiers.length > 0 && !isRegistrationEnded && (
+                            <div className="space-y-3">
+                                <label className="block text-sm font-medium">Select Package</label>
+                                <div className="space-y-2">
+                                    <button 
+                                        onClick={() => setSelectedTierId('')}
+                                        className={`w-full p-3 rounded-xl border text-left transition-all ${!selectedTierId ? 'border-primary-500 bg-primary-500/10' : 'border-campus-border hover:border-campus-border/60'}`}
+                                    >
+                                        <div className="flex justify-between items-center">
+                                            <span className="font-semibold">Standard Entry</span>
+                                            <span className="text-primary-400 font-bold">{formatPrice(event.price)}</span>
+                                        </div>
+                                    </button>
+                                    {event.ticketTiers.map(tier => (
+                                        <button 
+                                            key={tier._id}
+                                            onClick={() => setSelectedTierId(tier._id)}
+                                            className={`w-full p-3 rounded-xl border text-left transition-all ${selectedTierId === tier._id ? 'border-primary-500 bg-primary-500/10' : 'border-campus-border hover:border-campus-border/60'}`}
+                                        >
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="font-semibold">{tier.name}</span>
+                                                <span className="text-primary-400 font-bold">{formatPrice(tier.price)}</span>
+                                            </div>
+                                            <p className="text-[10px] text-campus-muted">{tier.description || `Includes ${tier.quantity} tickets`}</p>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         )}
 
@@ -239,7 +298,7 @@ export default function EventDetails() {
                         )}
 
                         {/* Wallet Balance (for logged-in users with paid events) */}
-                        {isAuthenticated && event.price > 0 && (
+                        {isAuthenticated && currentPrice > 0 && (
                             <div className="flex items-center justify-between p-3 rounded-xl bg-campus-dark/50 border border-campus-border/30">
                                 <div className="flex items-center gap-2">
                                     <Wallet className="w-4 h-4 text-yellow-400" />
@@ -252,10 +311,10 @@ export default function EventDetails() {
                         )}
 
                         {/* Insufficient balance warning */}
-                        {isAuthenticated && event.price > 0 && !hasEnoughBalance && (
+                        {isAuthenticated && currentPrice > 0 && !hasEnoughBalance && (
                             <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20">
                                 <p className="text-xs text-red-400 mb-2">
-                                    Insufficient balance. You need ₹{event.price} to book.
+                                    Insufficient balance. You need ₹{currentPrice} to book.
                                 </p>
                                 <a href="/wallet" className="text-xs text-primary-400 font-semibold hover:underline">
                                     + Add Money to Wallet →
@@ -266,26 +325,30 @@ export default function EventDetails() {
                         {/* Book Button */}
                         <button
                             onClick={handleBooking}
-                            disabled={booking || available <= 0}
+                            disabled={booking || available <= 0 || isRegistrationEnded}
                             className={`w-full flex items-center justify-center gap-2 text-lg py-3 px-6 rounded-xl font-semibold transition-all duration-200 ${
-                                event.price === 0
-                                    ? 'btn-primary'
-                                    : hasEnoughBalance
-                                        ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 text-yellow-400 hover:border-yellow-400/60 hover:shadow-lg hover:shadow-yellow-500/10'
-                                        : 'bg-campus-dark border border-campus-border text-campus-muted cursor-not-allowed opacity-60'
+                                isRegistrationEnded
+                                    ? 'bg-campus-dark border border-campus-border text-campus-muted cursor-not-allowed opacity-60'
+                                    : currentPrice === 0
+                                        ? 'btn-primary'
+                                        : hasEnoughBalance
+                                            ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 text-yellow-400 hover:border-yellow-400/60 hover:shadow-lg hover:shadow-yellow-500/10'
+                                            : 'bg-campus-dark border border-campus-border text-campus-muted cursor-not-allowed opacity-60'
                             }`}
                         >
                             {booking ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : isRegistrationEnded ? (
+                                'Registration Closed'
                             ) : available <= 0 ? (
                                 'Sold Out'
-                            ) : event.price === 0 ? (
+                            ) : currentPrice === 0 ? (
                                 <>
                                     <Ticket className="w-5 h-5" /> Book Free Ticket
                                 </>
                             ) : hasEnoughBalance ? (
                                 <>
-                                    <Wallet className="w-5 h-5" /> Pay ₹{event.price} from Wallet
+                                    <Wallet className="w-5 h-5" /> Pay ₹{currentPrice} from Wallet
                                 </>
                             ) : (
                                 <>

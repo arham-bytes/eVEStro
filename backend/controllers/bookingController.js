@@ -10,7 +10,7 @@ const sendEmail = require('../utils/sendEmail');
 // @route   POST /api/bookings
 exports.createBooking = async (req, res, next) => {
     try {
-        const { eventId, couponCode, paymentMethod } = req.body;
+        const { eventId, couponCode, paymentMethod, tierId } = req.body;
 
         const event = await Event.findById(eventId);
         if (!event) {
@@ -21,14 +21,36 @@ exports.createBooking = async (req, res, next) => {
             return res.status(400).json({ success: false, message: 'Event is not approved yet' });
         }
 
+        // Check registration closure
+        if (event.isRegistrationClosed) {
+            return res.status(400).json({ success: false, message: 'Registration for this event is closed' });
+        }
+        if (event.registrationEndDate && new Date() > new Date(event.registrationEndDate)) {
+            return res.status(400).json({ success: false, message: 'Registration for this event has ended' });
+        }
+
         // Check event accessibility
         if (!event.openForAll && req.user.college?.trim().toLowerCase() !== event.college?.trim().toLowerCase()) {
             return res.status(403).json({ success: false, message: `This event is restricted to students of ${event.college}` });
         }
 
+        // Handle Tier Selection
+        let selectedTier = null;
+        let quantity = 1;
+        let baseTicketPrice = event.price;
+
+        if (tierId && event.ticketTiers && event.ticketTiers.length > 0) {
+            selectedTier = event.ticketTiers.id(tierId);
+            if (!selectedTier) {
+                return res.status(400).json({ success: false, message: 'Invalid ticket tier' });
+            }
+            baseTicketPrice = selectedTier.price;
+            quantity = selectedTier.quantity;
+        }
+
         // Check available tickets
-        if (event.totalTickets && event.ticketsSold >= event.totalTickets) {
-            return res.status(400).json({ success: false, message: 'Event is sold out' });
+        if (event.totalTickets && (event.ticketsSold + quantity) > event.totalTickets) {
+            return res.status(400).json({ success: false, message: 'Not enough tickets available' });
         }
 
         // Prevent duplicate bookings
@@ -37,19 +59,19 @@ exports.createBooking = async (req, res, next) => {
             return res.status(400).json({ success: false, message: 'You have already booked this event' });
         }
 
-        // Calculate price with coupon (use customer-facing price)
-        let totalAmount = event.price;
+        // Calculate price with coupon
+        let totalAmount = baseTicketPrice;
         let couponUsed = '';
 
-        if (couponCode && event.price > 0) {
+        if (couponCode && baseTicketPrice > 0) {
             const coupon = event.coupons.find(
                 (c) => c.code === couponCode.toUpperCase() && c.isActive && c.usedCount < c.maxUses
             );
             if (coupon) {
-                totalAmount = Math.round(event.price * (1 - coupon.discountPercent / 100));
+                totalAmount = Math.round(baseTicketPrice * (1 - coupon.discountPercent / 100));
                 couponUsed = coupon.code;
                 coupon.usedCount += 1;
-                await event.save();
+                // Note: We'll save event later to include ticketsSold update
             }
         }
 
@@ -64,13 +86,14 @@ exports.createBooking = async (req, res, next) => {
                 user: req.user._id,
                 ticketId,
                 qrCode,
+                quantity,
                 totalAmount: 0,
                 couponUsed,
                 status: 'confirmed',
             });
 
             // Update tickets sold
-            event.ticketsSold += 1;
+            event.ticketsSold += quantity;
             await event.save();
 
             await booking.populate('event', 'title date venue');
@@ -131,13 +154,14 @@ exports.createBooking = async (req, res, next) => {
                 user: req.user._id,
                 ticketId,
                 qrCode,
+                quantity,
                 totalAmount,
                 couponUsed,
                 status: 'confirmed',
             });
 
             // Update tickets sold
-            event.ticketsSold += 1;
+            event.ticketsSold += quantity;
             await event.save();
 
             await booking.populate('event', 'title date venue');
