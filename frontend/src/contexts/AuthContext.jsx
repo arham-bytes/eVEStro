@@ -5,7 +5,7 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('eVEStro_token'));
+    const [token, setToken] = useState(localStorage.getItem('evestro_token'));
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -29,8 +29,8 @@ export function AuthProvider({ children }) {
 
     const login = async (email, password) => {
         const { data } = await api.post('/auth/login', { email, password });
-        localStorage.setItem('eVEStro_token', data.token);
-        localStorage.setItem('eVEStro_user', JSON.stringify(data.user));
+        localStorage.setItem('evestro_token', data.token);
+        localStorage.setItem('evestro_user', JSON.stringify(data.user));
         setToken(data.token);
         setUser(data.user);
         return data;
@@ -38,23 +38,23 @@ export function AuthProvider({ children }) {
 
     const register = async (userData) => {
         const { data } = await api.post('/auth/register', userData);
-        localStorage.setItem('eVEStro_token', data.token);
-        localStorage.setItem('eVEStro_user', JSON.stringify(data.user));
+        localStorage.setItem('evestro_token', data.token);
+        localStorage.setItem('evestro_user', JSON.stringify(data.user));
         setToken(data.token);
         setUser(data.user);
         return data;
     };
 
     const logout = () => {
-        localStorage.removeItem('eVEStro_token');
-        localStorage.removeItem('eVEStro_user');
+        localStorage.removeItem('evestro_token');
+        localStorage.removeItem('evestro_user');
         setToken(null);
         setUser(null);
     };
 
     const updateUser = (updatedUser) => {
         setUser(updatedUser);
-        localStorage.setItem('eVEStro_user', JSON.stringify(updatedUser));
+        localStorage.setItem('evestro_user', JSON.stringify(updatedUser));
     };
 
     return (
