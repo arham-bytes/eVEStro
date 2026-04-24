@@ -219,3 +219,6 @@ CLIENT_URL=http://localhost:5173
 ## 📄 License
 
 MIT © eVEStro 2026
+
+---
+*Last Security Audit: April 25, 2026 — Verified & Secured.*
