@@ -61,4 +61,8 @@ const bookingSchema = new mongoose.Schema(
 // Prevent duplicate bookings
 bookingSchema.index({ event: 1, user: 1 }, { unique: true });
 
+// Index for frequent lookups
+bookingSchema.index({ event: 1, status: 1 });
+bookingSchema.index({ user: 1, createdAt: -1 });
+
 module.exports = mongoose.model('Booking', bookingSchema);

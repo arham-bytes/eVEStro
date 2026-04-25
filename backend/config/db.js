@@ -1,20 +1,27 @@
 const mongoose = require('mongoose');
 
-const connectDB = async (retries = 3) => {
-  for (let i = 1; i <= retries; i++) {
-    try {
-      const conn = await mongoose.connect(process.env.MONGO_URI);
-      console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-      return;
-    } catch (error) {
-      console.error(`❌ MongoDB Connection Attempt ${i}/${retries} Failed: ${error.message}`);
-      if (i === retries) {
-        console.error('💀 All connection attempts failed. Exiting...');
-        process.exit(1);
-      }
-      console.log(`⏳ Retrying in 5 seconds...`);
-      await new Promise((r) => setTimeout(r, 5000));
-    }
+// Cache variable for the database connection
+let cachedConnection = null;
+
+const connectDB = async () => {
+  // If we already have a connection, use it
+  if (cachedConnection && mongoose.connection.readyState === 1) {
+    return cachedConnection;
+  }
+
+  try {
+    const opts = {
+      bufferCommands: false,
+    };
+
+    // Store the connection in the cache
+    cachedConnection = await mongoose.connect(process.env.MONGO_URI, opts);
+    console.log(`✅ MongoDB Connected: ${cachedConnection.connection.host}`);
+    return cachedConnection;
+  } catch (error) {
+    console.error(`❌ MongoDB Connection Failed: ${error.message}`);
+    // Don't exit process in serverless, just throw error so Vercel can retry the function
+    throw error;
   }
 };
 

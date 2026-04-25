@@ -106,4 +106,7 @@ userSchema.methods.getResetPasswordToken = function () {
     return resetToken;
 };
 
+// Index for college filtering
+userSchema.index({ college: 1 });
+
 module.exports = mongoose.model('User', userSchema);
