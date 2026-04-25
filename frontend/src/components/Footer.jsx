@@ -1,7 +1,19 @@
 import { Link } from 'react-router-dom';
-import { Ticket, Instagram, Mail } from 'lucide-react';
+import { Ticket, Instagram, Mail, Copy, Check } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export default function Footer() {
+    const email = 'evestro26@gmail.com';
+
+    const handleCopyEmail = (e) => {
+        e.preventDefault();
+        navigator.clipboard.writeText(email);
+        toast.success('Email copied to clipboard!');
+        
+        // Try to open mail app as well as a fallback/bonus
+        window.location.href = `mailto:${email}`;
+    };
+
     return (
         <footer className="bg-evestro-dark border-t border-evestro-border/30 mt-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -57,18 +69,22 @@ export default function Footer() {
                             >
                                 <Instagram className="w-5 h-5 group-hover:scale-110 transition-transform" />
                             </a>
-                            <a 
-                                href="mailto:evestro26@gmail.com"
+                            <button 
+                                onClick={handleCopyEmail}
                                 className="w-10 h-10 rounded-xl bg-evestro-card border border-evestro-border flex items-center justify-center
                                          text-evestro-muted hover:text-primary-400 hover:border-primary-500/50 hover:bg-primary-500/5 transition-all group"
-                                title="Email us"
+                                title="Click to copy email"
                             >
                                 <Mail className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                            </a>
+                            </button>
                         </div>
-                        <a href="mailto:evestro26@gmail.com" className="text-evestro-muted text-sm hover:text-primary-400 transition-colors">
-                            evestro26@gmail.com
-                        </a>
+                        <button 
+                            onClick={handleCopyEmail}
+                            className="text-evestro-muted text-sm hover:text-primary-400 transition-colors flex items-center gap-2 group"
+                        >
+                            {email}
+                            <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </button>
                     </div>
                 </div>
 

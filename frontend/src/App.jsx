@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -53,6 +54,14 @@ export default function App() {
                 </Routes>
             </main>
             <Footer />
+            <Toaster position="bottom-right" toastOptions={{
+                duration: 3000,
+                style: {
+                    background: '#1a1a2e',
+                    color: '#fff',
+                    border: '1px solid rgba(255,255,255,0.1)'
+                }
+            }} />
         </div>
     );
 }
