@@ -67,7 +67,6 @@ export default function Footer() {
                             </a>
                             <a 
                                 href={`mailto:${email}`}
-                                onClick={handleCopyEmail}
                                 className="w-10 h-10 rounded-xl bg-evestro-card border border-evestro-border flex items-center justify-center
                                          text-evestro-muted hover:text-primary-400 hover:border-primary-500/50 hover:bg-primary-500/5 transition-all group"
                                 title="Send us an email"
@@ -77,11 +76,9 @@ export default function Footer() {
                         </div>
                         <a 
                             href={`mailto:${email}`}
-                            onClick={handleCopyEmail}
                             className="text-evestro-muted text-sm hover:text-primary-400 transition-colors flex items-center gap-2 group"
                         >
                             {email}
-                            <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </a>
                     </div>
                 </div>
