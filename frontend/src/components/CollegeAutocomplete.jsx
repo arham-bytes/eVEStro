@@ -65,7 +65,7 @@ export default function CollegeAutocomplete({ value, onChange, placeholder = "Se
     return (
         <div ref={wrapperRef} className="relative w-full">
             <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-eVEStro-muted" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-evestro-muted" />
                 <input
                     type="text"
                     value={searchTerm}
@@ -103,7 +103,7 @@ export default function CollegeAutocomplete({ value, onChange, placeholder = "Se
                                             )}
                                         </div>
                                         {college.aliases.length > 0 && (
-                                            <p className="text-[10px] text-eVEStro-muted uppercase tracking-wider mt-0.5">
+                                            <p className="text-[10px] text-evestro-muted uppercase tracking-wider mt-0.5">
                                                 AKA: {college.aliases.join(', ')}
                                             </p>
                                         )}
@@ -113,7 +113,7 @@ export default function CollegeAutocomplete({ value, onChange, placeholder = "Se
                         </div>
                     ) : (
                         <div className="p-4 text-center">
-                            <p className="text-sm text-eVEStro-muted italic">" {searchTerm} "</p>
+                            <p className="text-sm text-evestro-muted italic">" {searchTerm} "</p>
                             <button 
                                 onClick={() => setIsOpen(false)}
                                 className="mt-2 text-xs text-primary-400 hover:underline"

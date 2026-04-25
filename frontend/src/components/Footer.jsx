@@ -3,7 +3,7 @@ import { Ticket, Instagram, Mail } from 'lucide-react';
 
 export default function Footer() {
     return (
-        <footer className="bg-eVEStro-dark border-t border-eVEStro-border/30 mt-20">
+        <footer className="bg-evestro-dark border-t border-evestro-border/30 mt-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                     {/* Brand */}
@@ -16,7 +16,7 @@ export default function Footer() {
                                 eVE<span className="gradient-text">Stro</span>
                             </span>
                         </Link>
-                        <p className="text-eVEStro-muted text-sm leading-relaxed">
+                        <p className="text-evestro-muted text-sm leading-relaxed">
                             India's #1 college event platform. Discover, book, and manage campus events seamlessly.
                         </p>
                     </div>
@@ -25,9 +25,9 @@ export default function Footer() {
                     <div>
                         <h4 className="text-sm font-semibold uppercase tracking-wider mb-4 text-white">Platform</h4>
                         <ul className="space-y-2">
-                            <li><Link to="/events" className="text-eVEStro-muted hover:text-primary-400 text-sm transition-colors">Browse Events</Link></li>
-                            <li><Link to="/signup" className="text-eVEStro-muted hover:text-primary-400 text-sm transition-colors">Create Account</Link></li>
-                            <li><Link to="/signup" className="text-eVEStro-muted hover:text-primary-400 text-sm transition-colors">Organize Events</Link></li>
+                            <li><Link to="/events" className="text-evestro-muted hover:text-primary-400 text-sm transition-colors">Browse Events</Link></li>
+                            <li><Link to="/signup" className="text-evestro-muted hover:text-primary-400 text-sm transition-colors">Create Account</Link></li>
+                            <li><Link to="/signup" className="text-evestro-muted hover:text-primary-400 text-sm transition-colors">Organize Events</Link></li>
                         </ul>
                     </div>
 
@@ -37,7 +37,7 @@ export default function Footer() {
                         <ul className="space-y-2">
                             {['Tech', 'Fest', 'Music', 'Sports', 'Workshop'].map((cat) => (
                                 <li key={cat}>
-                                    <Link to={`/events?category=${cat}`} className="text-eVEStro-muted hover:text-primary-400 text-sm transition-colors">{cat} Events</Link>
+                                    <Link to={`/events?category=${cat}`} className="text-evestro-muted hover:text-primary-400 text-sm transition-colors">{cat} Events</Link>
                                 </li>
                             ))}
                         </ul>
@@ -51,22 +51,22 @@ export default function Footer() {
                                 { Icon: Instagram, href: 'https://www.instagram.com/_eVEStro?igsh=OTE50WNydTI3cW9w', target: '_blank' },
                                 { Icon: Mail, href: 'mailto:eVEStro26@gmail.com' }
                             ].map(({ Icon, href, target }, i) => (
-                                <a key={i} href={href} target={target} rel={target === '_blank' ? "noopener noreferrer" : undefined} className="w-9 h-9 rounded-lg bg-eVEStro-card border border-eVEStro-border flex items-center justify-center
-                                               text-eVEStro-muted hover:text-primary-400 hover:border-primary-500/50 transition-all">
+                                <a key={i} href={href} target={target} rel={target === '_blank' ? "noopener noreferrer" : undefined} className="w-9 h-9 rounded-lg bg-evestro-card border border-evestro-border flex items-center justify-center
+                                               text-evestro-muted hover:text-primary-400 hover:border-primary-500/50 transition-all">
                                     <Icon className="w-4 h-4" />
                                 </a>
                             ))}
                         </div>
-                        <p className="text-eVEStro-muted text-sm">eVEStro26@gmail.com</p>
+                        <p className="text-evestro-muted text-sm">eVEStro26@gmail.com</p>
                     </div>
                 </div>
 
-                <div className="border-t border-eVEStro-border/30 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-eVEStro-muted text-sm">© 2026 eVEStro. Built with ❤️ for Indian colleges.</p>
+                <div className="border-t border-evestro-border/30 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="text-evestro-muted text-sm">© 2026 eVEStro. Built with ❤️ for Indian colleges.</p>
                     <div className="flex gap-6">
-                        <a href="#" className="text-eVEStro-muted hover:text-primary-400 text-sm transition-colors">Privacy</a>
-                        <a href="#" className="text-eVEStro-muted hover:text-primary-400 text-sm transition-colors">Terms</a>
-                        <a href="#" className="text-eVEStro-muted hover:text-primary-400 text-sm transition-colors">Support</a>
+                        <a href="#" className="text-evestro-muted hover:text-primary-400 text-sm transition-colors">Privacy</a>
+                        <a href="#" className="text-evestro-muted hover:text-primary-400 text-sm transition-colors">Terms</a>
+                        <a href="#" className="text-evestro-muted hover:text-primary-400 text-sm transition-colors">Support</a>
                     </div>
                 </div>
             </div>

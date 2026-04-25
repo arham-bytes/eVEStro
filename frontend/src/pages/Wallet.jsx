@@ -108,7 +108,7 @@ export default function Wallet() {
             {/* Header */}
             <div className="mb-8">
                 <h1 className="section-heading mb-2">My <span className="gradient-text">Wallet</span></h1>
-                <p className="text-eVEStro-muted">Add money and pay for events instantly.</p>
+                <p className="text-evestro-muted">Add money and pay for events instantly.</p>
             </div>
 
             {/* Balance Card */}
@@ -125,7 +125,7 @@ export default function Wallet() {
                             <WalletIcon className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                            <p className="text-sm text-eVEStro-muted">Available Balance</p>
+                            <p className="text-sm text-evestro-muted">Available Balance</p>
                             <p className="text-4xl md:text-5xl font-bold font-display">
                                 ₹{balance.toLocaleString('en-IN')}
                             </p>
@@ -149,7 +149,7 @@ export default function Wallet() {
                             className={`py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 ${
                                 Number(addAmount) === amt
                                     ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
-                                    : 'bg-eVEStro-dark border border-eVEStro-border hover:border-primary-500/50 text-eVEStro-muted hover:text-white'
+                                    : 'bg-evestro-dark border border-evestro-border hover:border-primary-500/50 text-evestro-muted hover:text-white'
                             }`}
                         >
                             ₹{amt.toLocaleString('en-IN')}
@@ -160,7 +160,7 @@ export default function Wallet() {
                 {/* Custom Amount */}
                 <div className="flex gap-3">
                     <div className="relative flex-1">
-                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-eVEStro-muted" />
+                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-evestro-muted" />
                         <input
                             type="number"
                             value={addAmount}
@@ -195,16 +195,16 @@ export default function Wallet() {
 
                 {transactions.length === 0 ? (
                     <div className="text-center py-12">
-                        <TrendingUp className="w-12 h-12 text-eVEStro-muted/30 mx-auto mb-3" />
-                        <p className="text-eVEStro-muted">No transactions yet</p>
-                        <p className="text-sm text-eVEStro-muted/60">Add money to get started!</p>
+                        <TrendingUp className="w-12 h-12 text-evestro-muted/30 mx-auto mb-3" />
+                        <p className="text-evestro-muted">No transactions yet</p>
+                        <p className="text-sm text-evestro-muted/60">Add money to get started!</p>
                     </div>
                 ) : (
                     <div className="space-y-3">
                         {transactions.map((txn) => (
                             <div
                                 key={txn._id}
-                                className="flex items-center justify-between p-4 rounded-xl bg-eVEStro-dark/50 border border-eVEStro-border/30 hover:border-eVEStro-border/60 transition-colors"
+                                className="flex items-center justify-between p-4 rounded-xl bg-evestro-dark/50 border border-evestro-border/30 hover:border-evestro-border/60 transition-colors"
                             >
                                 <div className="flex items-center gap-3">
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
@@ -220,7 +220,7 @@ export default function Wallet() {
                                     </div>
                                     <div>
                                         <p className="font-medium text-sm">{txn.description}</p>
-                                        <p className="text-xs text-eVEStro-muted">{formatDateTime(txn.createdAt)}</p>
+                                        <p className="text-xs text-evestro-muted">{formatDateTime(txn.createdAt)}</p>
                                     </div>
                                 </div>
                                 <div className="text-right">
@@ -229,7 +229,7 @@ export default function Wallet() {
                                     }`}>
                                         {txn.type === 'credit' ? '+' : '-'}₹{txn.amount.toLocaleString('en-IN')}
                                     </p>
-                                    <p className="text-xs text-eVEStro-muted">Bal: ₹{txn.balanceAfter.toLocaleString('en-IN')}</p>
+                                    <p className="text-xs text-evestro-muted">Bal: ₹{txn.balanceAfter.toLocaleString('en-IN')}</p>
                                 </div>
                             </div>
                         ))}

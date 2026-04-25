@@ -64,7 +64,7 @@ export default function Events() {
             {/* Header */}
             <div className="mb-8">
                 <h1 className="section-heading mb-2">Discover <span className="gradient-text">Events</span></h1>
-                <p className="text-eVEStro-muted">Find your next campus experience.</p>
+                <p className="text-evestro-muted">Find your next campus experience.</p>
             </div>
 
             {/* Search & Filters */}
@@ -72,7 +72,7 @@ export default function Events() {
                 <div className="flex flex-col lg:flex-row gap-4">
                     {/* Search */}
                     <div className="flex-1 relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-eVEStro-muted" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-evestro-muted" />
                         <input
                             type="text"
                             value={filters.search}
@@ -119,7 +119,7 @@ export default function Events() {
                             }}
                             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border ${filters.category === cat
                                     ? 'bg-primary-500/20 border-primary-500 text-primary-400'
-                                    : 'bg-eVEStro-dark border-eVEStro-border text-eVEStro-muted hover:border-eVEStro-muted'
+                                    : 'bg-evestro-dark border-evestro-border text-evestro-muted hover:border-evestro-muted'
                                 }`}
                         >
                             {cat}
@@ -140,13 +140,13 @@ export default function Events() {
                 </div>
             ) : events.length === 0 ? (
                 <div className="text-center py-20">
-                    <Calendar className="w-16 h-16 text-eVEStro-muted/30 mx-auto mb-4" />
+                    <Calendar className="w-16 h-16 text-evestro-muted/30 mx-auto mb-4" />
                     <h3 className="text-xl font-semibold mb-2">No events found</h3>
-                    <p className="text-eVEStro-muted">Try adjusting your filters or check back later.</p>
+                    <p className="text-evestro-muted">Try adjusting your filters or check back later.</p>
                 </div>
             ) : (
                 <>
-                    <p className="text-sm text-eVEStro-muted mb-6">{pagination.total || events.length} events found</p>
+                    <p className="text-sm text-evestro-muted mb-6">{pagination.total || events.length} events found</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {events.map((event) => (
                             <EventCard key={event._id} event={event} />
@@ -162,7 +162,7 @@ export default function Events() {
                                     onClick={() => setSearchParams({ ...Object.fromEntries(searchParams), page })}
                                     className={`w-10 h-10 rounded-xl text-sm font-medium transition-all ${pagination.page === page
                                             ? 'bg-primary-500 text-white'
-                                            : 'bg-eVEStro-card border border-eVEStro-border text-eVEStro-muted hover:border-primary-500/50'
+                                            : 'bg-evestro-card border border-evestro-border text-evestro-muted hover:border-primary-500/50'
                                         }`}
                                 >
                                     {page}

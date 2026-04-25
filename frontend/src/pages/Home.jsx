@@ -74,7 +74,7 @@ export default function Home() {
                             <span className="gradient-text">One Click Away</span>
                         </h1>
 
-                        <p className="text-lg md:text-xl text-eVEStro-muted max-w-2xl mx-auto mb-10 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+                        <p className="text-lg md:text-xl text-evestro-muted max-w-2xl mx-auto mb-10 animate-slide-up" style={{ animationDelay: '0.1s' }}>
                             Discover hackathons, college fests, concerts, sports tournaments, and more happening across Indian campuses. Book tickets instantly.
                         </p>
 
@@ -98,7 +98,7 @@ export default function Home() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="section-heading mb-4">Explore by <span className="gradient-text">Category</span></h2>
-                        <p className="text-eVEStro-muted max-w-xl mx-auto">From tech hackathons to music concerts — find events that match your vibe.</p>
+                        <p className="text-evestro-muted max-w-xl mx-auto">From tech hackathons to music concerts — find events that match your vibe.</p>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -113,7 +113,7 @@ export default function Home() {
                                     <cat.icon className="w-7 h-7 text-white" />
                                 </div>
                                 <h3 className="font-semibold mb-1">{cat.name}</h3>
-                                <p className="text-xs text-eVEStro-muted">{cat.desc}</p>
+                                <p className="text-xs text-evestro-muted">{cat.desc}</p>
                             </Link>
                         ))}
                     </div>
@@ -122,12 +122,12 @@ export default function Home() {
 
             {/* Featured Events */}
             {featuredEvents.length > 0 && (
-                <section className="py-20 bg-eVEStro-dark/50">
+                <section className="py-20 bg-evestro-dark/50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between mb-12">
                             <div>
                                 <h2 className="section-heading mb-2">Trending <span className="gradient-text">Events</span></h2>
-                                <p className="text-eVEStro-muted">Don't miss out on what's happening.</p>
+                                <p className="text-evestro-muted">Don't miss out on what's happening.</p>
                             </div>
                             <Link to="/events" className="btn-secondary flex items-center gap-2 text-sm">
                                 View All <ArrowRight className="w-4 h-4" />
@@ -148,7 +148,7 @@ export default function Home() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <h2 className="section-heading mb-4">How It <span className="gradient-text">Works</span></h2>
-                        <p className="text-eVEStro-muted max-w-xl mx-auto">Three simple steps to your next campus adventure.</p>
+                        <p className="text-evestro-muted max-w-xl mx-auto">Three simple steps to your next campus adventure.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -163,7 +163,7 @@ export default function Home() {
                                     <item.icon className="w-7 h-7 text-primary-400" />
                                 </div>
                                 <h3 className="text-xl font-semibold font-display mb-3">{item.title}</h3>
-                                <p className="text-eVEStro-muted text-sm leading-relaxed">{item.desc}</p>
+                                <p className="text-evestro-muted text-sm leading-relaxed">{item.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -179,7 +179,7 @@ export default function Home() {
                             <h2 className="text-3xl md:text-5xl font-bold font-display mb-4">
                                 Ready to host your <span className="gradient-text">next big event?</span>
                             </h2>
-                            <p className="text-eVEStro-muted mb-8 max-w-xl mx-auto">
+                            <p className="text-evestro-muted mb-8 max-w-xl mx-auto">
                                 Set up your event in minutes, sell tickets, and track everything — all in one platform.
                             </p>
                             <button onClick={handleOrganizeClick} className="btn-primary text-lg px-10 py-4 inline-flex items-center gap-2 group">

@@ -10,17 +10,30 @@ const sendEmail = require('../utils/sendEmail');
 // @route   POST /api/bookings
 exports.createBooking = async (req, res, next) => {
     try {
-        const { eventId, couponCode, paymentMethod, tierId } = req.body;
+        const { eventId, couponCode, paymentMethod, tierId, participants } = req.body;
 
         const event = await Event.findById(eventId);
         if (!event) {
             return res.status(404).json({ success: false, message: 'Event not found' });
         }
 
+        // Validate Team Size if applicable
+        if (event.registrationType === 'team') {
+            if (!participants || !Array.isArray(participants)) {
+                return res.status(400).json({ success: false, message: 'Team participant details are required' });
+            }
+            if (participants.length < event.teamSize.min || participants.length > event.teamSize.max) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: `Team size must be between ${event.teamSize.min} and ${event.teamSize.max} members` 
+                });
+            }
+        }
+
         if (event.status !== 'approved') {
             return res.status(400).json({ success: false, message: 'Event is not approved yet' });
         }
-
+// ... (rest of validation like registration closure and accessibility remains same)
         // Check registration closure
         if (event.isRegistrationClosed) {
             return res.status(400).json({ success: false, message: 'Registration for this event is closed' });
@@ -71,28 +84,29 @@ exports.createBooking = async (req, res, next) => {
                 totalAmount = Math.round(baseTicketPrice * (1 - coupon.discountPercent / 100));
                 couponUsed = coupon.code;
                 coupon.usedCount += 1;
-                // Note: We'll save event later to include ticketsSold update
             }
         }
 
+        // Ticket Generation Logic
+        const ticketId = `EV-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
+        const scanUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/verify/${ticketId}`;
+        const qrCode = await generateQR(scanUrl);
+
+        const bookingData = {
+            event: eventId,
+            user: req.user._id,
+            ticketId,
+            qrCode,
+            quantity,
+            totalAmount,
+            couponUsed,
+            participants, // Store team/participant details
+            status: 'confirmed',
+        };
+
         // For free events, book directly
         if (totalAmount === 0) {
-            const ticketId = `CP-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
-            const scanUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/verify/${ticketId}`;
-            const qrCode = await generateQR(scanUrl);
-
-            const booking = await Booking.create({
-                event: eventId,
-                user: req.user._id,
-                ticketId,
-                qrCode,
-                quantity,
-                totalAmount: 0,
-                couponUsed,
-                status: 'confirmed',
-            });
-
-            // Update tickets sold
+            const booking = await Booking.create(bookingData);
             event.ticketsSold += quantity;
             await event.save();
 
@@ -107,6 +121,7 @@ exports.createBooking = async (req, res, next) => {
           <p><strong>Event:</strong> ${event.title}</p>
           <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
           <p><strong>Venue:</strong> ${event.venue}</p>
+          <p><strong>Quantity:</strong> ${quantity} ticket(s) ${event.registrationType === 'team' ? '(Team Registration)' : ''}</p>
           <p><strong>Ticket ID:</strong> ${ticketId}</p>
           <p>Show your QR code at the venue for check-in.</p>
         `,
@@ -117,7 +132,6 @@ exports.createBooking = async (req, res, next) => {
 
         // WALLET PAYMENT
         if (paymentMethod === 'wallet') {
-            // Atomically check and deduct balance to prevent double-spend race conditions
             const user = await User.findOneAndUpdate(
                 { _id: req.user._id, walletBalance: { $gte: totalAmount } },
                 { $inc: { walletBalance: -totalAmount } },
@@ -125,7 +139,6 @@ exports.createBooking = async (req, res, next) => {
             );
 
             if (!user) {
-                // Determine exact current balance for helpful error message
                 const currentUser = await User.findById(req.user._id);
                 return res.status(400).json({
                     success: false,
@@ -144,23 +157,7 @@ exports.createBooking = async (req, res, next) => {
                 status: 'completed',
             });
 
-            // Create booking
-            const ticketId = `CP-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
-            const scanUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/verify/${ticketId}`;
-            const qrCode = await generateQR(scanUrl);
-
-            const booking = await Booking.create({
-                event: eventId,
-                user: req.user._id,
-                ticketId,
-                qrCode,
-                quantity,
-                totalAmount,
-                couponUsed,
-                status: 'confirmed',
-            });
-
-            // Update tickets sold
+            const booking = await Booking.create(bookingData);
             event.ticketsSold += quantity;
             await event.save();
 
@@ -176,6 +173,7 @@ exports.createBooking = async (req, res, next) => {
           <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
           <p><strong>Venue:</strong> ${event.venue}</p>
           <p><strong>Amount Paid:</strong> ₹${totalAmount} (from wallet)</p>
+          <p><strong>Quantity:</strong> ${quantity} ticket(s) ${event.registrationType === 'team' ? '(Team Registration)' : ''}</p>
           <p><strong>Ticket ID:</strong> ${ticketId}</p>
           <p>Show your QR code at the venue for check-in.</p>
         `,

@@ -58,7 +58,7 @@ export default function Signup() {
                         </div>
                     </Link>
                     <h1 className="text-3xl font-bold font-display mt-4">Create your account</h1>
-                    <p className="text-eVEStro-muted mt-2">Join thousands of students on eVEStro</p>
+                    <p className="text-evestro-muted mt-2">Join thousands of students on eVEStro</p>
                 </div>
 
                 <div className="glass-card p-8">
@@ -70,7 +70,7 @@ export default function Signup() {
                                 onClick={() => setForm({ ...form, role })}
                                 className={`flex-1 py-3 rounded-xl text-sm font-medium transition-all border ${form.role === role
                                         ? 'bg-primary-500/20 border-primary-500 text-primary-400'
-                                        : 'bg-eVEStro-dark border-eVEStro-border text-eVEStro-muted hover:border-eVEStro-muted'
+                                        : 'bg-evestro-dark border-evestro-border text-evestro-muted hover:border-evestro-muted'
                                     }`}
                             >
                                 {role === 'student' ? '🎓 Student' : '🎪 Organizer'}
@@ -115,7 +115,7 @@ export default function Signup() {
                                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                                         className="input-field pr-12" placeholder="Min 6 characters" />
                                     <button type="button" onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-eVEStro-muted hover:text-white transition-colors">
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-evestro-muted hover:text-white transition-colors">
                                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                     </button>
                                 </div>
@@ -139,7 +139,7 @@ export default function Signup() {
                         </button>
                     </form>
 
-                    <p className="text-center text-sm text-eVEStro-muted mt-6">
+                    <p className="text-center text-sm text-evestro-muted mt-6">
                         Already have an account?{' '}
                         <Link to="/login" className="text-primary-400 hover:text-primary-300 font-medium transition-colors">Sign in</Link>
                     </p>

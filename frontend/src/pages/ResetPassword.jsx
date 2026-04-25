@@ -47,7 +47,7 @@ export default function ResetPassword() {
 
             <div className="w-full max-w-md z-10 animate-fade-in">
                 {!success && (
-                    <Link to="/login" className="flex items-center gap-2 text-eVEStro-muted hover:text-white mb-6 w-fit transition-colors">
+                    <Link to="/login" className="flex items-center gap-2 text-evestro-muted hover:text-white mb-6 w-fit transition-colors">
                         <ArrowLeft className="w-4 h-4" /> Back to Login
                     </Link>
                 )}
@@ -58,7 +58,7 @@ export default function ResetPassword() {
                             <Lock className="w-8 h-8 text-primary-400" />
                         </div>
                         <h1 className="text-2xl font-bold font-display mb-2">Create New Password</h1>
-                        <p className="text-eVEStro-muted">
+                        <p className="text-evestro-muted">
                             {success 
                                 ? "Your password has been successfully reset."
                                 : "Please enter your new password below."}
@@ -70,7 +70,7 @@ export default function ResetPassword() {
                             <div className="bg-green-500/10 border border-green-500/20 p-6 rounded-xl">
                                 <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-4 animate-[bounce_1s_ease-in-out]" />
                                 <h3 className="text-lg font-semibold text-white mb-1">Password Changed!</h3>
-                                <p className="text-sm text-eVEStro-muted">You will be redirected to the login page momentarily.</p>
+                                <p className="text-sm text-evestro-muted">You will be redirected to the login page momentarily.</p>
                             </div>
                             <button
                                 onClick={() => navigate('/login')}
@@ -82,7 +82,7 @@ export default function ResetPassword() {
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-5">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-eVEStro-muted ml-1">New Password</label>
+                                <label className="text-sm font-medium text-evestro-muted ml-1">New Password</label>
                                 <div className="relative">
                                     <input
                                         type="password"
@@ -92,12 +92,12 @@ export default function ResetPassword() {
                                         className="input-field pl-10"
                                         placeholder="Enter new password (min. 6 chars)"
                                     />
-                                    <Lock className="w-5 h-5 text-eVEStro-muted absolute left-3 top-1/2 -translate-y-1/2" />
+                                    <Lock className="w-5 h-5 text-evestro-muted absolute left-3 top-1/2 -translate-y-1/2" />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-eVEStro-muted ml-1">Confirm New Password</label>
+                                <label className="text-sm font-medium text-evestro-muted ml-1">Confirm New Password</label>
                                 <div className="relative">
                                     <input
                                         type="password"
@@ -107,7 +107,7 @@ export default function ResetPassword() {
                                         className="input-field pl-10"
                                         placeholder="Confirm new password"
                                     />
-                                    <Lock className="w-5 h-5 text-eVEStro-muted absolute left-3 top-1/2 -translate-y-1/2" />
+                                    <Lock className="w-5 h-5 text-evestro-muted absolute left-3 top-1/2 -translate-y-1/2" />
                                 </div>
                             </div>
 

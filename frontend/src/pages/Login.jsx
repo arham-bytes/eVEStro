@@ -51,7 +51,7 @@ export default function Login() {
                         </div>
                     </Link>
                     <h1 className="text-3xl font-bold font-display mt-4">Welcome back</h1>
-                    <p className="text-eVEStro-muted mt-2">Sign in to your eVEStro account</p>
+                    <p className="text-evestro-muted mt-2">Sign in to your eVEStro account</p>
                 </div>
 
                 <div className="glass-card p-8">
@@ -80,7 +80,7 @@ export default function Login() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-eVEStro-muted hover:text-white transition-colors"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-evestro-muted hover:text-white transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                 </button>
@@ -98,7 +98,7 @@ export default function Login() {
                         </button>
                     </form>
 
-                    <p className="text-center text-sm text-eVEStro-muted mt-6">
+                    <p className="text-center text-sm text-evestro-muted mt-6">
                         Don't have an account?{' '}
                         <Link to="/signup" className="text-primary-400 hover:text-primary-300 font-medium transition-colors">
                             Create one

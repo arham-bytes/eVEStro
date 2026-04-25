@@ -109,6 +109,20 @@ const eventSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        registrationType: {
+            type: String,
+            enum: ['individual', 'team'],
+            default: 'individual',
+        },
+        teamSize: {
+            min: { type: Number, default: 1 },
+            max: { type: Number, default: 1 },
+        },
+        participantFields: [{
+            label: { type: String, required: true },
+            required: { type: Boolean, default: true },
+            type: { type: String, default: 'text' },
+        }],
     },
     { timestamps: true }
 );

@@ -131,11 +131,7 @@ exports.createEvent = async (req, res, next) => {
         // Handle ticket tiers
         let ticketTiers = req.body.ticketTiers;
         if (typeof ticketTiers === 'string') {
-            try {
-                ticketTiers = JSON.parse(ticketTiers);
-            } catch (error) {
-                ticketTiers = null;
-            }
+            try { ticketTiers = JSON.parse(ticketTiers); } catch (e) { ticketTiers = null; }
         }
 
         if (ticketTiers && Array.isArray(ticketTiers)) {
@@ -148,6 +144,14 @@ exports.createEvent = async (req, res, next) => {
                     quantity: Number(tier.quantity) || 1
                 };
             });
+        }
+
+        // Handle team registration and participant fields
+        if (typeof req.body.participantFields === 'string') {
+            try { eventData.participantFields = JSON.parse(req.body.participantFields); } catch (e) {}
+        }
+        if (typeof req.body.teamSize === 'string') {
+            try { eventData.teamSize = JSON.parse(req.body.teamSize); } catch (e) {}
         }
 
         const event = await Event.create(eventData);
@@ -205,6 +209,13 @@ exports.updateEvent = async (req, res, next) => {
                     quantity: Number(tier.quantity) || 1
                 };
             });
+        }
+
+        if (typeof req.body.participantFields === 'string') {
+            try { req.body.participantFields = JSON.parse(req.body.participantFields); } catch (e) {}
+        }
+        if (typeof req.body.teamSize === 'string') {
+            try { req.body.teamSize = JSON.parse(req.body.teamSize); } catch (e) {}
         }
 
         event = await Event.findByIdAndUpdate(req.params.id, req.body, {

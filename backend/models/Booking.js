@@ -46,6 +46,14 @@ const bookingSchema = new mongoose.Schema(
         checkedInAt: {
             type: Date,
         },
+        participants: [{
+            name: { type: String },
+            email: { type: String },
+            customData: {
+                type: Map,
+                of: String
+            }
+        }],
     },
     { timestamps: true }
 );

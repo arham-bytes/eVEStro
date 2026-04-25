@@ -60,7 +60,7 @@ export default function StudentDashboard() {
             case 'confirmed': return 'text-green-400 bg-green-500/10';
             case 'checked-in': return 'text-blue-400 bg-blue-500/10';
             case 'cancelled': return 'text-red-400 bg-red-500/10';
-            default: return 'text-eVEStro-muted bg-eVEStro-dark';
+            default: return 'text-evestro-muted bg-evestro-dark';
         }
     };
 
@@ -96,7 +96,7 @@ export default function StudentDashboard() {
             {/* Header */}
             <div className="mb-8">
                 <h1 className="section-heading mb-2">My <span className="gradient-text">Dashboard</span></h1>
-                <p className="text-eVEStro-muted">Welcome back, {user?.name}! Here are your bookings.</p>
+                <p className="text-evestro-muted">Welcome back, {user?.name}! Here are your bookings.</p>
             </div>
 
             {/* Stats */}
@@ -104,22 +104,22 @@ export default function StudentDashboard() {
                 <div className="glass-card p-6 text-center">
                     <Ticket className="w-8 h-8 text-primary-400 mx-auto mb-2" />
                     <p className="text-2xl font-bold">{bookings.length}</p>
-                    <p className="text-sm text-eVEStro-muted">Total Bookings</p>
+                    <p className="text-sm text-evestro-muted">Total Bookings</p>
                 </div>
                 <div className="glass-card p-6 text-center">
                     <CheckCircle className="w-8 h-8 text-green-400 mx-auto mb-2" />
                     <p className="text-2xl font-bold">{bookings.filter(b => b.status === 'confirmed').length}</p>
-                    <p className="text-sm text-eVEStro-muted">Active Tickets</p>
+                    <p className="text-sm text-evestro-muted">Active Tickets</p>
                 </div>
                 <div className="glass-card p-6 text-center">
                     <QrCode className="w-8 h-8 text-blue-400 mx-auto mb-2" />
                     <p className="text-2xl font-bold">{bookings.filter(b => b.status === 'checked-in').length}</p>
-                    <p className="text-sm text-eVEStro-muted">Attended</p>
+                    <p className="text-sm text-evestro-muted">Attended</p>
                 </div>
                 <Link to="/wallet" className="glass-card p-6 text-center hover:border-primary-500/50 transition-all group">
                     <Wallet className="w-8 h-8 text-yellow-400 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                     <p className="text-2xl font-bold">₹{(user?.walletBalance || 0).toLocaleString('en-IN')}</p>
-                    <p className="text-sm text-eVEStro-muted">Wallet Balance</p>
+                    <p className="text-sm text-evestro-muted">Wallet Balance</p>
                 </Link>
             </div>
 
@@ -128,10 +128,10 @@ export default function StudentDashboard() {
                 <div className="glass-card p-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div>
                         <h3 className="font-semibold mb-1">Your Referral Code</h3>
-                        <p className="text-sm text-eVEStro-muted">Share with friends to earn rewards.</p>
+                        <p className="text-sm text-evestro-muted">Share with friends to earn rewards.</p>
                     </div>
                     <div className="flex items-center gap-2">
-                        <code className="px-4 py-2 bg-eVEStro-dark rounded-lg text-primary-400 font-mono text-lg">{user.referralCode}</code>
+                        <code className="px-4 py-2 bg-evestro-dark rounded-lg text-primary-400 font-mono text-lg">{user.referralCode}</code>
                         <button
                             onClick={() => { navigator.clipboard.writeText(user.referralCode); }}
                             className="btn-secondary text-sm !px-3 !py-2"
@@ -144,7 +144,7 @@ export default function StudentDashboard() {
             {volunteerEvents.length > 0 && (
                 <div className="glass-card p-6 mb-8 border border-primary-500/30">
                     <h2 className="text-lg font-semibold mb-2 flex items-center gap-2"><QrCode className="w-5 h-5 text-primary-400" /> Volunteer Check-in Scanner</h2>
-                    <p className="text-sm text-eVEStro-muted mb-4">You are a volunteer for {volunteerEvents.length} event(s). Scan tickets below.</p>
+                    <p className="text-sm text-evestro-muted mb-4">You are a volunteer for {volunteerEvents.length} event(s). Scan tickets below.</p>
                     <div className="flex gap-2">
                         <input type="text" value={scanTicketId} onChange={(e) => setScanTicketId(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleVerifyTicket()}
@@ -167,9 +167,9 @@ export default function StudentDashboard() {
                 </div>
             ) : bookings.length === 0 ? (
                 <div className="text-center py-20 glass-card">
-                    <Ticket className="w-16 h-16 text-eVEStro-muted/30 mx-auto mb-4" />
+                    <Ticket className="w-16 h-16 text-evestro-muted/30 mx-auto mb-4" />
                     <h3 className="text-xl font-semibold mb-2">No bookings yet</h3>
-                    <p className="text-eVEStro-muted mb-6">Start by exploring events!</p>
+                    <p className="text-evestro-muted mb-6">Start by exploring events!</p>
                     <a href="/events" className="btn-primary inline-flex">Browse Events</a>
                 </div>
             ) : (
@@ -192,11 +192,11 @@ export default function StudentDashboard() {
                                         <h3 className="text-lg font-semibold">{booking.event?.title || 'Event'}</h3>
                                         <span className={`badge ${getStatusColor(booking.status)}`}>{booking.status}</span>
                                     </div>
-                                    <div className="flex flex-wrap gap-4 text-sm text-eVEStro-muted mb-3">
+                                    <div className="flex flex-wrap gap-4 text-sm text-evestro-muted mb-3">
                                         <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> {booking.event?.date ? formatDate(booking.event.date) : '-'}</span>
                                         <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {booking.event?.venue || '-'}</span>
                                     </div>
-                                    <p className="text-sm text-eVEStro-muted">Ticket: <span className="text-primary-400 font-mono">{booking.ticketId}</span></p>
+                                    <p className="text-sm text-evestro-muted">Ticket: <span className="text-primary-400 font-mono">{booking.ticketId}</span></p>
                                 </div>
 
                                 <div className="flex items-center justify-between mt-4">
@@ -221,11 +221,11 @@ export default function StudentDashboard() {
                         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedBooking(null)}>
                             <div className="glass-card p-8 max-w-sm w-full text-center animate-slide-up" onClick={(e) => e.stopPropagation()}>
                                 <h3 className="text-xl font-semibold mb-2">{selectedBooking.event?.title}</h3>
-                                <p className="text-sm text-eVEStro-muted mb-4">Ticket: {selectedBooking.ticketId}</p>
+                                <p className="text-sm text-evestro-muted mb-4">Ticket: {selectedBooking.ticketId}</p>
                                 <div className="bg-white rounded-2xl p-4 inline-block mb-4">
                                     <img src={selectedBooking.qrCode} alt="QR Code" className="w-48 h-48" />
                                 </div>
-                                <p className="text-sm text-eVEStro-muted">Show this QR code at the venue for check-in</p>
+                                <p className="text-sm text-evestro-muted">Show this QR code at the venue for check-in</p>
                                 <button onClick={() => setSelectedBooking(null)} className="btn-secondary mt-4 w-full">Close</button>
                             </div>
                         </div>
