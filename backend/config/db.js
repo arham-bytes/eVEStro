@@ -10,8 +10,13 @@ const connectDB = async () => {
   }
 
   try {
+    // Set global mongoose options
+    mongoose.set('bufferCommands', true);
+    mongoose.set('autoIndex', true);
+
     const opts = {
-      bufferCommands: false,
+      bufferCommands: true, // Changed from false to true to prevent immediate failure
+      maxPoolSize: 10,
     };
 
     // Store the connection in the cache

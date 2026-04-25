@@ -23,6 +23,18 @@ app.use(helmet());
 // Allow cross-origin image requests (cloudinary)
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
+// Middleware to ensure DB connection for every request (important for serverless)
+// This is now at the top to prevent any route hit before DB is ready
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        console.error('Database connection middleware error:', error.message);
+        res.status(500).json({ success: false, message: 'Database connection failed' });
+    }
+});
+
 // Rate Limiting
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -58,16 +70,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Middleware to ensure DB connection for every request (important for serverless)
-app.use(async (req, res, next) => {
-    try {
-        await connectDB();
-        next();
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Database connection failed' });
-    }
-});
 
 // API Routes
 app.use('/api/auth', authRoutes);
