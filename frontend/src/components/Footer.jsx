@@ -49,7 +49,7 @@ export default function Footer() {
                         <div className="flex gap-3 mb-4">
                             {[
                                 { Icon: Instagram, href: 'https://www.instagram.com/_eVEStro?igsh=OTE50WNydTI3cW9w', target: '_blank' },
-                                { Icon: Mail, href: 'mailto:eVEStro26@gmail.com' }
+                                { Icon: Mail, href: 'mailto:evestro26@gmail.com' }
                             ].map(({ Icon, href, target }, i) => (
                                 <a key={i} href={href} target={target} rel={target === '_blank' ? "noopener noreferrer" : undefined} className="w-9 h-9 rounded-lg bg-evestro-card border border-evestro-border flex items-center justify-center
                                                text-evestro-muted hover:text-primary-400 hover:border-primary-500/50 transition-all">
@@ -57,7 +57,7 @@ export default function Footer() {
                                 </a>
                             ))}
                         </div>
-                        <p className="text-evestro-muted text-sm">eVEStro26@gmail.com</p>
+                        <p className="text-evestro-muted text-sm">evestro26@gmail.com</p>
                     </div>
                 </div>
 
