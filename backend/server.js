@@ -47,7 +47,9 @@ const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
     process.env.CLIENT_URL,
-    'https://evestro.vercel.app'
+    'https://evestro.vercel.app',
+    'https://evestro.in',
+    'https://www.evestro.in'
 ].filter(Boolean);
 
 app.use(cors({
@@ -56,7 +58,8 @@ app.use(cors({
         if (!origin) return callback(null, true);
         
         const isAllowed = allowedOrigins.some(allowed => origin === allowed) || 
-                         origin.endsWith('.vercel.app');
+                         origin.endsWith('.vercel.app') ||
+                         origin.endsWith('.evestro.in');
 
         if (isAllowed) {
             return callback(null, true);
