@@ -46,18 +46,29 @@ export default function Footer() {
                     {/* Contact */}
                     <div>
                         <h4 className="text-sm font-semibold uppercase tracking-wider mb-4 text-white">Connect</h4>
-                        <div className="flex gap-3 mb-4">
-                            {[
-                                { Icon: Instagram, href: 'https://www.instagram.com/_eVEStro?igsh=OTE50WNydTI3cW9w', target: '_blank' },
-                                { Icon: Mail, href: 'mailto:evestro26@gmail.com' }
-                            ].map(({ Icon, href, target }, i) => (
-                                <a key={i} href={href} target={target} rel={target === '_blank' ? "noopener noreferrer" : undefined} className="w-9 h-9 rounded-lg bg-evestro-card border border-evestro-border flex items-center justify-center
-                                               text-evestro-muted hover:text-primary-400 hover:border-primary-500/50 transition-all">
-                                    <Icon className="w-4 h-4" />
-                                </a>
-                            ))}
+                        <div className="flex gap-4 mb-4">
+                            <a 
+                                href="https://www.instagram.com/_eVEStro?igsh=OTE50WNydTI3cW9w" 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="w-10 h-10 rounded-xl bg-evestro-card border border-evestro-border flex items-center justify-center
+                                         text-evestro-muted hover:text-primary-400 hover:border-primary-500/50 hover:bg-primary-500/5 transition-all group"
+                                title="Follow us on Instagram"
+                            >
+                                <Instagram className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                            </a>
+                            <a 
+                                href="mailto:evestro26@gmail.com"
+                                className="w-10 h-10 rounded-xl bg-evestro-card border border-evestro-border flex items-center justify-center
+                                         text-evestro-muted hover:text-primary-400 hover:border-primary-500/50 hover:bg-primary-500/5 transition-all group"
+                                title="Email us"
+                            >
+                                <Mail className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                            </a>
                         </div>
-                        <p className="text-evestro-muted text-sm">evestro26@gmail.com</p>
+                        <a href="mailto:evestro26@gmail.com" className="text-evestro-muted text-sm hover:text-primary-400 transition-colors">
+                            evestro26@gmail.com
+                        </a>
                     </div>
                 </div>
 
