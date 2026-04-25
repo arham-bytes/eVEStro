@@ -16,7 +16,7 @@ const walletRoutes = require('./routes/wallet');
 const app = express();
 
 // Connect to database
-connectDB();
+// connectDB(); // Removing old non-awaited call
 
 // Middleware
 app.use(helmet());
@@ -59,6 +59,16 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Middleware to ensure DB connection for every request (important for serverless)
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Database connection failed' });
+    }
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
@@ -81,10 +91,20 @@ app.use('*', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log(`\n🚀 Evestro API running on port ${PORT}`);
-    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔗 URL: http://localhost:${PORT}\n`);
-});
+// Start server after DB connection
+const startServer = async () => {
+    try {
+        await connectDB();
+        app.listen(PORT, () => {
+            console.log(`\n🚀 Evestro API running on port ${PORT}`);
+            console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+            console.log(`🔗 URL: http://localhost:${PORT}\n`);
+        });
+    } catch (error) {
+        console.error(`❌ Server Initialization Failed: ${error.message}`);
+    }
+};
+
+startServer();
 
 module.exports = app;
