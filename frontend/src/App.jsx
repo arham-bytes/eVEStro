@@ -16,7 +16,7 @@ import Wallet from './pages/Wallet';
 import VerifyTicket from './pages/VerifyTicket';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
-import Verification from './pages/Verification';
+
 
 export default function App() {
     return (
@@ -29,7 +29,7 @@ export default function App() {
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/resetpassword/:resettoken" element={<ResetPassword />} />
-                    <Route path="/verify" element={<Verification />} />
+
                     <Route path="/events" element={<Events />} />
                     <Route path="/events/:id" element={<EventDetails />} />
                     <Route

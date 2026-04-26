@@ -1,15 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Eye, EyeOff, Ticket, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Ticket, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CollegeAutocomplete from '../components/CollegeAutocomplete';
+import api from '../api/axios';
 
 export default function Signup() {
     const [form, setForm] = useState({
         name: '', email: '', password: '', confirmPassword: '',
         role: 'student', college: '', phone: '', referredBy: '',
     });
+    
+    // Verification states
+    const [emailVerified, setEmailVerified] = useState(false);
+    const [otpInputs, setOtpInputs] = useState({ email: '' });
+    const [otpSent, setOtpSent] = useState({ email: false });
+    const [verifying, setVerifying] = useState({ email: false });
+
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const { register, isAuthenticated, user } = useAuth();
@@ -17,28 +25,59 @@ export default function Signup() {
 
     useEffect(() => {
         if (isAuthenticated && user) {
-            if (!user.isEmailVerified || !user.isPhoneVerified) {
-                navigate('/verify', { replace: true });
-                return;
-            }
             const dest = user.role === 'admin' ? '/admin' : user.role === 'organizer' ? '/organizer' : '/dashboard';
             navigate(dest, { replace: true });
         }
     }, [isAuthenticated, user, navigate]);
 
+    const sendOTP = async (type) => {
+        const value = type === 'email' ? form.email : form.phone;
+        if (!value) return toast.error(`Please enter your ${type}`);
+        
+        setVerifying(prev => ({ ...prev, [type]: true }));
+        try {
+            await api.post('/auth/send-pre-signup-otp', { identifier: value, type });
+            setOtpSent(prev => ({ ...prev, [type]: true }));
+            toast.success(`OTP sent to ${value}`);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to send OTP');
+        } finally {
+            setVerifying(prev => ({ ...prev, [type]: false }));
+        }
+    };
+
+    const verifyOTP = async (type) => {
+        const value = type === 'email' ? form.email : form.phone;
+        const otp = otpInputs[type];
+        if (!otp) return toast.error('Please enter the OTP');
+
+        setVerifying(prev => ({ ...prev, [type]: true }));
+        try {
+            await api.post('/auth/verify-pre-signup-otp', { identifier: value, otp });
+            if (type === 'email') setEmailVerified(true);
+            toast.success('Email verified!');
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Invalid OTP');
+        } finally {
+            setVerifying(prev => ({ ...prev, [type]: false }));
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!form.name || !form.email || !form.password || !form.phone) return toast.error('Please fill required fields');
+        if (!emailVerified) {
+            return toast.error('Please verify email first');
+        }
+        if (!form.name || !form.password) return toast.error('Please fill required fields');
         if (form.role === 'student' && !form.college?.trim()) return toast.error('Please enter your college name');
         if (form.password !== form.confirmPassword) return toast.error('Passwords do not match');
-        if (form.password.length < 6) return toast.error('Password must be at least 6 characters');
-
+        
         setLoading(true);
         try {
             const { confirmPassword, ...userData } = form;
-            const data = await register(userData);
-            toast.success(`Welcome to eVEStro, ${data.user.name}!`);
-            navigate('/verify');
+            await register(userData);
+            toast.success('Registration successful!');
+            navigate(form.role === 'organizer' ? '/organizer' : '/dashboard');
         } catch (error) {
             toast.error(error.response?.data?.message || 'Signup failed');
         } finally {
@@ -64,8 +103,7 @@ export default function Signup() {
                     <p className="text-evestro-muted mt-2">Join thousands of students on eVEStro</p>
                 </div>
 
-                <div className="glass-card p-8">
-                    {/* Role Selector */}
+                <div className="glass-card p-8 blur-bg">
                     <div className="flex gap-2 mb-6">
                         {['student', 'organizer'].map((role) => (
                             <button
@@ -82,24 +120,63 @@ export default function Signup() {
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Full Name *</label>
-                                <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                    className="input-field" placeholder="John Doe" />
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Full Name *</label>
+                            <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                className="input-field" placeholder="John Doe" required />
+                        </div>
+
+                        {/* Email Verification Row */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium">Email *</label>
+                            <div className="flex gap-2">
+                                <input 
+                                    type="email" 
+                                    value={form.email} 
+                                    disabled={emailVerified}
+                                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                    className="input-field flex-1" 
+                                    placeholder="you@college.edu" 
+                                />
+                                {!emailVerified ? (
+                                    <button 
+                                        type="button"
+                                        onClick={() => sendOTP('email')}
+                                        disabled={verifying.email || !form.email}
+                                        className="btn-primary !px-4 !py-2 text-sm"
+                                    >
+                                        {otpSent.email ? 'Resend' : 'Send OTP'}
+                                    </button>
+                                ) : (
+                                    <div className="flex items-center gap-1 text-green-400 font-medium text-sm px-2">
+                                        <CheckCircle2 size={16} /> Verified
+                                    </div>
+                                )}
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Phone *</label>
-                                <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                                    required
-                                    className="input-field" placeholder="+91 9876543210" />
-                            </div>
+                            {otpSent.email && !emailVerified && (
+                                <div className="flex gap-2 mt-2 animate-in fade-in slide-in-from-top-1">
+                                    <input 
+                                        type="text"
+                                        placeholder="Enter OTP"
+                                        className="input-field !py-1 text-center tracking-widest"
+                                        value={otpInputs.email}
+                                        onChange={(e) => setOtpInputs({...otpInputs, email: e.target.value})}
+                                    />
+                                    <button 
+                                        type="button" 
+                                        onClick={() => verifyOTP('email')}
+                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded-lg text-sm transition-all"
+                                    >
+                                        Verify
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium mb-2">Email *</label>
-                            <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                className="input-field" placeholder="you@college.edu" />
+                            <label className="block text-sm font-medium mb-2">Phone *</label>
+                            <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                                className="input-field" placeholder="+91 9876543210" required />
                         </div>
 
                         <div>
@@ -107,7 +184,7 @@ export default function Signup() {
                             <CollegeAutocomplete 
                                 value={form.college}
                                 onChange={(val) => setForm({ ...form, college: val })}
-                                placeholder="Search or type college name (e.g. LPU, IIT...)"
+                                placeholder="Search or type college name"
                             />
                         </div>
 
@@ -132,14 +209,21 @@ export default function Signup() {
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium mb-2">Referral Code (optional)</label>
-                            <input type="text" value={form.referredBy} onChange={(e) => setForm({ ...form, referredBy: e.target.value })}
-                                className="input-field" placeholder="CP-XXXXXXXX" />
-                        </div>
-
-                        <button type="submit" disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2 mt-6">
-                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Create Account'}
+                        <button 
+                            type="submit" 
+                            disabled={loading || !emailVerified} 
+                            className={`w-full flex items-center justify-center gap-2 mt-6 py-3 rounded-xl font-bold transition-all ${
+                                !emailVerified 
+                                ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed opacity-50' 
+                                : 'bg-primary-600 hover:bg-primary-700 text-white shadow-lg shadow-primary-500/20 active:scale-95'
+                            }`}
+                        >
+                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                                <>
+                                    {!emailVerified ? <ShieldCheck size={18} /> : null}
+                                    {!emailVerified ? 'Complete Verification to Sign Up' : 'Create Account'}
+                                </>
+                            )}
                         </button>
                     </form>
 

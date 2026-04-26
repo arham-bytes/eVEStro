@@ -21,9 +21,6 @@ export default function ProtectedRoute({ children, roles }) {
         return <Navigate to="/" replace />;
     }
 
-    if (!user.isEmailVerified || !user.isPhoneVerified) {
-        return <Navigate to="/verify" replace />;
-    }
 
     return children;
 }

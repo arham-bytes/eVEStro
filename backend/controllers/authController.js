@@ -1,5 +1,6 @@
 const { validationResult, body } = require('express-validator');
 const User = require('../models/User');
+const Verification = require('../models/Verification');
 const sendEmail = require('../utils/sendEmail');
 const sendSMS = require('../utils/sendSMS');
 const crypto = require('crypto');
@@ -39,10 +40,11 @@ exports.register = async (req, res, next) => {
             return res.status(400).json({ success: false, message: 'Email already registered' });
         }
 
-        // Generate OTPs
-        const emailOTP = generateOTP();
-        const phoneOTP = generateOTP();
-        const otpExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+        const emailVerified = await Verification.findOne({ identifier: email, isVerified: true });
+
+        if (!emailVerified) {
+            return res.status(400).json({ success: false, message: 'Email must be verified first' });
+        }
 
         const user = await User.create({
             name,
@@ -52,30 +54,12 @@ exports.register = async (req, res, next) => {
             college,
             phone,
             referredBy,
-            emailOTP,
-            phoneOTP,
-            emailOTPExpire: otpExpire,
-            phoneOTPExpire: otpExpire,
+            isEmailVerified: true,
+            isPhoneVerified: false,
         });
 
-        // Send OTPs
-        await sendEmail({
-            to: user.email,
-            subject: 'eVEStro - Email Verification OTP',
-            html: `
-                <div style="font-family: inherit; text-align: center; padding: 20px;">
-                    <h2 style="color: #6366f1;">Welcome to eVEStro!</h2>
-                    <p>Your OTP for email verification is:</p>
-                    <h1 style="letter-spacing: 5px; color: #111;">${emailOTP}</h1>
-                    <p style="color: #666; font-size: 12px;">This OTP is valid for 10 minutes.</p>
-                </div>
-            `
-        });
-
-        await sendSMS({
-            phone: user.phone,
-            message: `Your eVEStro verification code is: ${phoneOTP}. Valid for 10 mins.`
-        });
+        // Delete verification records
+        await Verification.deleteMany({ identifier: email });
 
         const token = user.getSignedJwtToken();
 
@@ -275,80 +259,54 @@ exports.resetPassword = async (req, res, next) => {
         next(error);
     }
 };
-// @desc    Verify Email
-// @route   POST /api/auth/verify-email
-exports.verifyEmail = async (req, res, next) => {
+// @desc    Send OTP before signup
+// @route   POST /api/auth/send-pre-signup-otp
+exports.sendPreSignupOTP = async (req, res, next) => {
     try {
-        const { otp } = req.body;
-        const user = await User.findById(req.user._id);
-
-        if (!user.emailOTP || user.emailOTP !== otp || user.emailOTPExpire < Date.now()) {
-            return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
-        }
-
-        user.isEmailVerified = true;
-        user.emailOTP = undefined;
-        user.emailOTPExpire = undefined;
-        await user.save();
-
-        res.json({ success: true, message: 'Email verified successfully' });
-    } catch (error) {
-        next(error);
-    }
-};
-
-// @desc    Verify Phone
-// @route   POST /api/auth/verify-phone
-exports.verifyPhone = async (req, res, next) => {
-    try {
-        const { otp } = req.body;
-        const user = await User.findById(req.user._id);
-
-        if (!user.phoneOTP || user.phoneOTP !== otp || user.phoneOTPExpire < Date.now()) {
-            return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
-        }
-
-        user.isPhoneVerified = true;
-        user.phoneOTP = undefined;
-        user.phoneOTPExpire = undefined;
-        await user.save();
-
-        res.json({ success: true, message: 'Phone verified successfully' });
-    } catch (error) {
-        next(error);
-    }
-};
-
-// @desc    Resend OTPs
-// @route   POST /api/auth/resend-otp
-exports.resendOTP = async (req, res, next) => {
-    try {
-        const { type } = req.body; // 'email' or 'phone'
-        const user = await User.findById(req.user._id);
+        const { identifier, type } = req.body; // type: 'email' or 'phone'
+        
+        // Remove existing OTPs for this identifier
+        await Verification.deleteMany({ identifier });
 
         const otp = generateOTP();
-        const expire = Date.now() + 10 * 60 * 1000;
+        await Verification.create({ identifier, otp });
 
         if (type === 'email') {
-            user.emailOTP = otp;
-            user.emailOTPExpire = expire;
-            await user.save();
             await sendEmail({
-                to: user.email,
-                subject: 'eVEStro - New Email OTP',
-                html: `<h1>${otp}</h1>`
+                to: identifier,
+                subject: 'eVEStro - Verification OTP',
+                html: `<div style="text-align:center;padding:20px;"><h2>Verification Code</h2><h1>${otp}</h1></div>`
             });
         } else {
-            user.phoneOTP = otp;
-            user.phoneOTPExpire = expire;
-            await user.save();
             await sendSMS({
-                phone: user.phone,
-                message: `Your new eVEStro code is: ${otp}`
+                phone: identifier,
+                message: `Your eVEStro verification code is: ${otp}`
             });
         }
 
-        res.json({ success: true, message: `New OTP sent to your ${type}` });
+        res.json({ success: true, message: `OTP sent to your ${type}` });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Verify OTP before signup
+// @route   POST /api/auth/verify-pre-signup-otp
+exports.verifyPreSignupOTP = async (req, res, next) => {
+    try {
+        const { identifier, otp } = req.body;
+        const verification = await Verification.findOne({ identifier, otp });
+
+        if (!verification) {
+            return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
+        }
+
+        // Mark as verified but don't delete yet (register will delete after creating user)
+        // We need to add isVerified to the model
+        verification.isVerified = true;
+        await verification.save();
+
+        res.json({ success: true, message: 'Verified successfully ✅' });
     } catch (error) {
         next(error);
     }

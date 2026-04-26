@@ -13,10 +13,7 @@ export default function Login() {
 
     useEffect(() => {
         if (isAuthenticated && user) {
-            if (!user.isEmailVerified || !user.isPhoneVerified) {
-                navigate('/verify', { replace: true });
-                return;
-            }
+
             const dest = user.role === 'admin' ? '/admin' : user.role === 'organizer' ? '/organizer' : '/dashboard';
             navigate(dest, { replace: true });
         }
@@ -30,10 +27,7 @@ export default function Login() {
             const data = await login(form.email, form.password);
             toast.success(`Welcome back, ${data.user.name}!`);
             
-            if (!data.user.isEmailVerified || !data.user.isPhoneVerified) {
-                navigate('/verify');
-                return;
-            }
+
             
             const dest = data.user.role === 'admin' ? '/admin' : data.user.role === 'organizer' ? '/organizer' : '/dashboard';
             navigate(dest);
