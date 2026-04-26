@@ -5,7 +5,7 @@ import api from '../api/axios';
 import EventCard from '../components/EventCard';
 import CollegeAutocomplete from '../components/CollegeAutocomplete';
 
-const CATEGORIES = ['All', 'Tech', 'Fest', 'Music', 'Sports', 'Workshop', 'Seminar', 'Other'];
+const CATEGORIES = ['All', 'Tech', 'Fest', 'Music', 'Sports', 'Esports', 'Workshop', 'Seminar', 'Other'];
 
 export default function Events() {
     const [searchParams, setSearchParams] = useSearchParams();

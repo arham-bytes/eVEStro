@@ -24,7 +24,7 @@ const eventSchema = new mongoose.Schema(
         category: {
             type: String,
             required: true,
-            enum: ['Tech', 'Fest', 'Music', 'Sports', 'Workshop', 'Seminar', 'Other'],
+            enum: ['Tech', 'Fest', 'Music', 'Sports', 'Esports', 'Workshop', 'Seminar', 'Other'],
         },
         college: {
             type: String,

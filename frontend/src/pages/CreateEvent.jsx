@@ -5,7 +5,7 @@ import api from '../api/axios';
 import toast from 'react-hot-toast';
 import CollegeAutocomplete from '../components/CollegeAutocomplete';
 
-const CATEGORIES = ['Tech', 'Fest', 'Music', 'Sports', 'Workshop', 'Seminar', 'Other'];
+const CATEGORIES = ['Tech', 'Fest', 'Music', 'Sports', 'Esports', 'Workshop', 'Seminar', 'Other'];
 
 export default function CreateEvent() {
     const navigate = useNavigate();
