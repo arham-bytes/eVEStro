@@ -251,7 +251,7 @@ exports.verifyTicket = async (req, res, next) => {
 
         // Verify organizer owns this event or user is a volunteer
         const isOrganizer = booking.event.organizer.toString() === req.user._id.toString();
-        const isVolunteer = booking.event.volunteers && booking.event.volunteers.includes(req.user._id);
+        const isVolunteer = booking.event.volunteers && booking.event.volunteers.some(v => v.toString() === req.user._id.toString());
         const isAdmin = req.user.role === 'admin';
 
         if (!isOrganizer && !isVolunteer && !isAdmin) {
