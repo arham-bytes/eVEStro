@@ -26,19 +26,28 @@ export default function QRScanner({ onScan, onClose }) {
                     aspectRatio: 1.0
                 };
                 
-                // 2. Start the camera with back-camera preference
-                await html5QrCode.start(
-                    { facingMode: "environment" }, 
-                    config,
-                    (decodedText) => {
-                        // Success callback
-                        onScan(decodedText);
-                        // We close automatically on scan success via the parent
-                    },
-                    (errorMessage) => {
-                        // Scanning... (ignore frame-by-frame errors)
-                    }
-                );
+                // 2. Start the camera with back-camera preference (Strictly environment)
+                // We try "exact: environment" first for strictness, then fallback to "environment"
+                try {
+                    await html5QrCode.start(
+                        { facingMode: { exact: "environment" } }, 
+                        config,
+                        (decodedText) => {
+                            onScan(decodedText);
+                        },
+                        () => {}
+                    );
+                } catch (strictError) {
+                    console.log("Strict environment camera failed, trying non-exact environment");
+                    await html5QrCode.start(
+                        { facingMode: "environment" }, 
+                        config,
+                        (decodedText) => {
+                            onScan(decodedText);
+                        },
+                        () => {}
+                    );
+                }
                 
                 setIsStarted(true);
             } catch (err) {
