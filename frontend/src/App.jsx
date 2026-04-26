@@ -16,6 +16,7 @@ import Wallet from './pages/Wallet';
 import VerifyTicket from './pages/VerifyTicket';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import { Analytics } from '@vercel/analytics/react';
 
 
 export default function App() {
@@ -64,6 +65,7 @@ export default function App() {
                     border: '1px solid rgba(255,255,255,0.1)'
                 }
             }} />
+            <Analytics />
         </div>
     );
 }
