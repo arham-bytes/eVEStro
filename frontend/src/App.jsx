@@ -16,7 +16,7 @@ import Wallet from './pages/Wallet';
 import VerifyTicket from './pages/VerifyTicket';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from "@vercel/analytics/next";
 
 
 export default function App() {
