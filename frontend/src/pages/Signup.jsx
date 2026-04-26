@@ -17,6 +17,10 @@ export default function Signup() {
 
     useEffect(() => {
         if (isAuthenticated && user) {
+            if (!user.isEmailVerified || !user.isPhoneVerified) {
+                navigate('/verify', { replace: true });
+                return;
+            }
             const dest = user.role === 'admin' ? '/admin' : user.role === 'organizer' ? '/organizer' : '/dashboard';
             navigate(dest, { replace: true });
         }
