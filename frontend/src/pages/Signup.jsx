@@ -24,7 +24,7 @@ export default function Signup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!form.name || !form.email || !form.password) return toast.error('Please fill required fields');
+        if (!form.name || !form.email || !form.password || !form.phone) return toast.error('Please fill required fields');
         if (form.role === 'student' && !form.college?.trim()) return toast.error('Please enter your college name');
         if (form.password !== form.confirmPassword) return toast.error('Passwords do not match');
         if (form.password.length < 6) return toast.error('Password must be at least 6 characters');
@@ -34,8 +34,7 @@ export default function Signup() {
             const { confirmPassword, ...userData } = form;
             const data = await register(userData);
             toast.success(`Welcome to eVEStro, ${data.user.name}!`);
-            const dest = data.user.role === 'organizer' ? '/organizer' : '/dashboard';
-            navigate(dest);
+            navigate('/verify');
         } catch (error) {
             toast.error(error.response?.data?.message || 'Signup failed');
         } finally {
@@ -86,8 +85,9 @@ export default function Signup() {
                                     className="input-field" placeholder="John Doe" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-2">Phone</label>
+                                <label className="block text-sm font-medium mb-2">Phone *</label>
                                 <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                                    required
                                     className="input-field" placeholder="+91 9876543210" />
                             </div>
                         </div>
