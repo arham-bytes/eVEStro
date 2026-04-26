@@ -123,6 +123,10 @@ const eventSchema = new mongoose.Schema(
             required: { type: Boolean, default: true },
             type: { type: String, default: 'text' },
         }],
+        acceptedTerms: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 );

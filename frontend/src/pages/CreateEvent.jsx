@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, Loader2, Calendar, MapPin, Tag, DollarSign, Users, FileText, Building2, Plus, Trash2, Clock } from 'lucide-react';
+import { Upload, Loader2, Calendar, MapPin, Tag, DollarSign, Users, FileText, Building2, Plus, Trash2, Clock, ShieldCheck } from 'lucide-react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import CollegeAutocomplete from '../components/CollegeAutocomplete';
@@ -20,6 +20,7 @@ export default function CreateEvent() {
         participantFields: [{ label: 'Full Name', required: true, type: 'text' }],
     });
     const [imageFile, setImageFile] = useState(null);
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -72,6 +73,9 @@ export default function CreateEvent() {
         if (!form.title || !form.description || !form.college || !form.venue || !form.date) {
             return toast.error('Please fill all required fields');
         }
+        if (!acceptedTerms) {
+            return toast.error('Please accept the Terms & Conditions to proceed');
+        }
         setLoading(true);
         try {
             const formData = new FormData();
@@ -89,6 +93,7 @@ export default function CreateEvent() {
             formData.append('time', combinedTime);
             
             if (imageFile) formData.append('image', imageFile);
+            formData.append('acceptedTerms', acceptedTerms);
 
             await api.post('/events', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
@@ -370,11 +375,37 @@ export default function CreateEvent() {
                     </div>
                 </section>
 
-                <div className="pt-8">
+                <div className="pt-8 space-y-6">
+                    <div className="glass-card p-6 bg-evestro-dark/20 border-evestro-border/30">
+                        <h3 className="text-sm font-semibold flex items-center gap-2 mb-3 text-primary-400">
+                            <ShieldCheck className="w-4 h-4" /> Terms & Conditions for Organizers
+                        </h3>
+                        <div className="text-[11px] text-evestro-muted leading-relaxed h-32 overflow-y-auto pr-2 custom-scrollbar space-y-2">
+                            <p>The Event Organizer agrees that all ticket sales for events listed on eVEStro will be conducted exclusively through the eVEStro platform for the duration of the event listing. The Organizer shall not sell, distribute, or offer tickets for the same event through any other platform, website, or offline channels without prior written consent from eVEStro.</p>
+                            <p>All payments collected from users will be processed through eVEStro. The platform will deduct applicable service fees and commissions, and the remaining amount will be settled to the Event Organizer within the agreed settlement period.</p>
+                            <p>Refunds, if applicable, will be governed by the event-specific refund policy set by the Organizer. eVEStro will not be liable for refunds unless explicitly stated.</p>
+                            <p>eVEStro acts solely as a technology platform facilitating ticket bookings and is not responsible for the execution, quality, or cancellation of events.</p>
+                            <p>Any fraudulent activity, misuse of the platform, or violation of terms may result in suspension or termination of access without prior notice.</p>
+                        </div>
+                        <label className="flex items-center gap-3 mt-4 cursor-pointer group">
+                            <div className="relative flex items-center">
+                                <input 
+                                    type="checkbox" 
+                                    checked={acceptedTerms} 
+                                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                                    className="w-5 h-5 rounded border-evestro-border bg-evestro-dark text-primary-500 focus:ring-primary-500 transition-all cursor-pointer"
+                                />
+                            </div>
+                            <span className="text-sm text-evestro-muted group-hover:text-evestro-light transition-colors">
+                                I agree to the Event Organizer Terms and Conditions
+                            </span>
+                        </label>
+                    </div>
+
                     <button type="submit" disabled={loading} className="btn-primary w-full py-4 text-xl font-bold flex items-center justify-center gap-2 shadow-glow hover:shadow-primary-500/20">
                         {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : '🚀 Launch Event'}
                     </button>
-                    <p className="text-center text-xs text-evestro-muted mt-4">By clicking launch, you agree to our Terms of Service for organizers.</p>
+                    <p className="text-center text-xs text-evestro-muted">By clicking launch, you agree to our platform policies.</p>
                 </div>
             </form>
         </div>

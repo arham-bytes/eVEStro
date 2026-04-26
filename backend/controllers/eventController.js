@@ -116,6 +116,10 @@ exports.createEvent = async (req, res, next) => {
         const basePrice = Number(req.body.price) || 0;
         const customerPrice = basePrice > 0 ? Math.ceil(basePrice * (1 + PLATFORM_MARKUP)) : 0;
 
+        if (req.body.acceptedTerms !== 'true' && req.body.acceptedTerms !== true) {
+            return res.status(400).json({ success: false, message: 'You must accept the Terms & Conditions to create an event' });
+        }
+
         const eventData = {
             ...req.body,
             organizer: req.user._id,
